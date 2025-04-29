@@ -54,6 +54,7 @@ class game:
     history = []
     route_history = []
     board = [[str(0) for _ in range(cols)] for _ in range(rows)]
+    completed_games = []
 
     archive_filename = recording_dir+"player/"+"n_games"+str(n_games)+"n_plays"+str(number_of_plays)+".pkl"
     route_archive_filename = recording_dir+"player/"+"routes_games"+str(n_games)+"size"+str(number_of_plays)+".pkl"
@@ -135,8 +136,9 @@ class game:
 
         print("Saving to ", self.archive_filename, " and ", self.route_archive_filename)
 
+        print(len(self.completed_games))
         fileObj = open(self.archive_filename, 'wb')
-        pickle.dump(self.history, fileObj)
+        pickle.dump(self.completed_games, fileObj)
         fileObj.close()
 
         fileObj = open(self.route_archive_filename, 'wb')
@@ -174,6 +176,7 @@ class game:
                 self.update_game(nxt_board)
                 i = i+1
 
+            self.completed_games.append(self.history)
             if n % 10 == 10-1:
                 self.save_player_data()
 

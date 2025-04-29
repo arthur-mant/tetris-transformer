@@ -1,9 +1,9 @@
 import pickle
+import sys
+import random
 
 cols = 10
-filename = "./data/player/plays_games100size1000.pkl"
-i = 567
-
+filename = sys.argv[1]
 
 def print_board(board):
     for row in board:
@@ -20,14 +20,17 @@ def print_board(board):
 
 
 f = open(filename, "rb")
-game = pickle.load(f)
+games = pickle.load(f)
 
-print(game[i])
+game = random.choice(games)
+play = random.choice(game)
 
-print_board(game[i]["board"])
-print("Piece: ", game[i]["piece"])
-print("Next Piece: ", game[i]["next_piece"])
-print("Coordinate: ", game[i]["coordinate"])
+print("random play selected from file:")
+
+print_board(play["board"])
+print("Piece: ", play["piece"])
+print("Next Piece: ", play["next_piece"])
+print("Coordinate: ", play["coordinate"])
 
 #print("Route: ", game[i]["route"])
 
