@@ -52,18 +52,18 @@ class game:
     piece = get_piece()
     next_piece = get_piece()
     history = []
-    route_history = []
+    #route_history = []
     board = [[str(0) for _ in range(cols)] for _ in range(rows)]
     completed_games = []
 
-    archive_filename = recording_dir+"player/"+"n_games"+str(n_games)+"n_plays"+str(number_of_plays)+".pkl"
-    route_archive_filename = recording_dir+"player/"+"routes_games"+str(n_games)+"size"+str(number_of_plays)+".pkl"
+    archive_filename = recording_dir+"n_games"+str(n_games)+"n_plays"+str(number_of_plays)+".pkl"
+    #route_archive_filename = recording_dir+"player/"+"routes_games"+str(n_games)+"size"+str(number_of_plays)+".pkl"
 
     def new_game(self):
         self.piece = get_piece()
         self.next_piece = get_piece()
         self.history = []
-        self.route_history = []
+        #self.route_history = []
         self.board = [[str(0) for _ in range(cols)] for _ in range(rows)]
 
     def print_board(self, board):
@@ -134,16 +134,14 @@ class game:
 
     def save_player_data(self):
 
-        print("Saving to ", self.archive_filename, " and ", self.route_archive_filename)
-
-        print(len(self.completed_games))
+        print("Saved ", len(self.completed_games), " completed games to ", self.archive_filename)
         fileObj = open(self.archive_filename, 'wb')
         pickle.dump(self.completed_games, fileObj)
         fileObj.close()
 
-        fileObj = open(self.route_archive_filename, 'wb')
-        pickle.dump(self.route_history, fileObj)
-        fileObj.close()
+        #fileObj = open(self.route_archive_filename, 'wb')
+        #pickle.dump(self.route_history, fileObj)
+        #fileObj.close()
 
     def generate_player_db(self, n, n_plays):
         print("Number of games: ", n)
@@ -166,12 +164,12 @@ class game:
                     'next_piece': self.next_piece,
                     'coordinate': piece_coordinates
                 })
-                self.route_history.append({
-                    'board': self.board,
-                    'piece': self.piece,
-                    'coordinate': piece_coordinates,
-                    'route': self.gen_route(path)
-                })
+                #self.route_history.append({
+                #    'board': self.board,
+                #    'piece': self.piece,
+                #    'coordinate': piece_coordinates,
+                #    'route': self.gen_route(path)
+                #})
 
                 self.update_game(nxt_board)
                 i = i+1
@@ -179,6 +177,7 @@ class game:
             self.completed_games.append(self.history)
             if n % 10 == 10-1:
                 self.save_player_data()
+        self.save_player_data()
 
     def get_coordinates(self, piece_board):
         for i in range(-2, rows):
