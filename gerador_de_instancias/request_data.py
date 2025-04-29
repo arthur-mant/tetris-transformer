@@ -4,12 +4,15 @@ import pickle
 import sys
 from datetime import datetime
 
+if len(sys.argv) < 3 or not sys.argv[1].isnumeric() or not sys.argv[1].isnumeric():
+    print("Informe o número de jogos e o número de jogadas")
+    print("python request_data.py NUM_JOGOS NUM_JOGADAS")
+    sys.exit(0)
+n_games = int(sys.argv[1])
+number_of_plays = int(sys.argv[2])
 
 cols = 10
 rows = 20
-number_of_plays = 1000      #por jogo
-n_games = 100               #qtde de jogos
-
 piece_vector = ['I', 'O', 'L', 'J', 'S', 'Z', 'T']
 url = "http://localhost:3000"
 
@@ -52,7 +55,7 @@ class game:
     route_history = []
     board = [[str(0) for _ in range(cols)] for _ in range(rows)]
 
-    archive_filename = recording_dir+"player/"+"plays_games"+str(n_games)+"size"+str(number_of_plays)+".pkl"
+    archive_filename = recording_dir+"player/"+"n_games"+str(n_games)+"n_plays"+str(number_of_plays)+".pkl"
     route_archive_filename = recording_dir+"player/"+"routes_games"+str(n_games)+"size"+str(number_of_plays)+".pkl"
 
     def new_game(self):
@@ -170,7 +173,9 @@ class game:
 
                 self.update_game(nxt_board)
                 i = i+1
-            self.save_player_data()
+
+            if n % 10 == 10-1:
+                self.save_player_data()
 
     def get_coordinates(self, piece_board):
         for i in range(-2, rows):
