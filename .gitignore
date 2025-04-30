@@ -1,4 +1,6 @@
-gerador_de_instancias/StackRabbit/
-gerador_de_instancias/data/
-gerador_de_instancias/node_modules/
-gerador_de_instancias/package-lock.json
+*.pyc
+*.swp
+*.png
+*.log
+*.pickle
+*.pkl
