@@ -16,21 +16,25 @@ def print_board(board):
         aux += "-"
     print(aux)
 
-
-
+def print_play(play):
+    print_board(play["board"])
+    print("Piece: ", play["piece"])
+    print("Next Piece: ", play["next_piece"])
+    print("Coordinate: ", play["coordinate"])
+    print("Lines Cleared: ", play["lines_cleared"])
 
 f = open(filename, "rb")
 games = pickle.load(f)
 
 game = random.choice(games)
-play = random.choice(game)
+for play in game:
+    print_play(play)
 
-print("random play selected from file:")
+#play = random.choice(game)
+#print("random play selected from file:")
+#print_play(play)
 
-print_board(play["board"])
-print("Piece: ", play["piece"])
-print("Next Piece: ", play["next_piece"])
-print("Coordinate: ", play["coordinate"])
+
 
 #print("Route: ", game[i]["route"])
 

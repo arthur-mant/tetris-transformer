@@ -1,6 +1,6 @@
-*.pyc
-*.swp
-*.png
-*.log
-*.pickle
-*.pkl
+**.pyc
+**.swp
+**.png
+**.log
+**.pickle
+**.pkl

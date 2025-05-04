@@ -157,20 +157,14 @@ class game:
                     lost = True
                     break
 
-                piece_coordinates = self.board_to_coordinate(nxt_board)
+                piece_coordinates, lines_cleared = self.board_to_coordinate(nxt_board)
                 self.history.append({
                     'board': self.board,
                     'piece': self.piece,
                     'next_piece': self.next_piece,
-                    'coordinate': piece_coordinates
+                    'coordinate': piece_coordinates,
+                    'lines_cleared': lines_cleared
                 })
-                #self.route_history.append({
-                #    'board': self.board,
-                #    'piece': self.piece,
-                #    'coordinate': piece_coordinates,
-                #    'route': self.gen_route(path)
-                #})
-
                 self.update_game(nxt_board)
                 i = i+1
 
@@ -244,7 +238,7 @@ class game:
                 if piece_board[i][j] == '-1':
                     cleared_lines = True
         if not cleared_lines:
-            return self.get_coordinates(piece_board)
+            return self.get_coordinates(piece_board), 0
 
         lines_cleared = 0
         deepest_line_cleared = 0
@@ -303,7 +297,8 @@ class game:
                             possible_pos.append((deepest_line_cleared-3+i+shift_down, filled[0]-3+j, r))
         for pos in possible_pos:
             if self.simulate_and_check(pos, new_board):
-                return pos
+                return pos, lines_cleared
+        return None, None
 
     def gen_route(self, path):
 

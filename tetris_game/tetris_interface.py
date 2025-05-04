@@ -27,6 +27,7 @@ class Piece:
         self.rotation = (self.rotation+1) % len(pieces[self.type])
 
 
+line_score = [400, 1000, 3000, 12000]
 
 class Tetris:
     score = 0
@@ -39,7 +40,6 @@ class Tetris:
     fps = "?"
 
     gameover = False
-    line_score = [400, 1000, 3000, 12000]
 
     def __init__(self, field=None):      #should be at least 4x4
         if bool(field):
@@ -99,7 +99,7 @@ class Tetris:
                     for l in range(self.width):
                         self.field[k][l] = self.field[k-1][l]
         if lines > 0:
-            self.score += self.line_score[lines-1]
+            self.score += line_score[lines-1]
             self.lines += lines
             print(lines, " cleared!!!!!!!!!!!!")
         return lines
@@ -126,6 +126,8 @@ class Tetris:
         self.piece.y -= 1
         return False, self.freeze()
 
+    def get_state(self):
+        return self.field, self.piece, self.next_piece
 
 class GameRun:
     game = None
@@ -139,9 +141,6 @@ class GameRun:
             self.screen_i = screen.Screen(pygame, 500, 500, 100, 60, 20)
 
     def run_frame(self, action):
-        if self.game.piece is None:
-            print("ERROR: No piece")
-            #self.game.new_piece()
 
         if bool(action):
             self.game.act(action)
