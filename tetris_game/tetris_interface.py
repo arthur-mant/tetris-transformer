@@ -1,33 +1,31 @@
 import pygame
 import random
-import screen
+from . import screen
+from . import definitions
 import copy
+import time
 
-pieces = [
-    [[8, 9, 10, 11], [2, 6, 10,14]],    #I
-    [[8, 9, 10, 14], [5, 9, 12, 13], [4, 8, 9, 10], [5, 6, 9, 13]],      #J
-    [[8, 9, 10, 12], [4, 5, 9, 13], [6, 8, 9, 10], [5, 9, 13, 14]],      #L
-    [[8, 9, 10, 13], [5, 8, 9, 13], [5, 8, 9, 10], [5, 9, 10, 13]],       #T
-    [[9, 10, 13, 14]],                    #O
-    [[8, 9, 13, 14], [6, 9, 10, 13]],      #Z
-    [[9, 10, 12, 13], [5, 9, 10, 14]]       #S
-]
+pieces = definitions.pieces
+line_score = definitions.line_score
+
 class Piece:
 
-    def __init__(self, x, y, rot):
+    def __init__(self, x, y, rot, p_type=None):
         self.x = x
         self.y = y
-        self.type = random.randint(0, len(pieces) - 1)
         self.rotation = rot
+        
+        if p_type == None:
+            self.type = random.randint(0, len(pieces) - 1)
+        else:
+            self.type = p_type
+
 
     def image(self):
         return pieces[self.type][self.rotation]
 
     def rotate(self):
         self.rotation = (self.rotation+1) % len(pieces[self.type])
-
-
-line_score = [400, 1000, 3000, 12000]
 
 class Tetris:
     score = 0
@@ -41,18 +39,26 @@ class Tetris:
 
     gameover = False
 
-    def __init__(self, field=None):      #should be at least 4x4
+    def __init__(self, field=None, piece_list=None):      #should be at least 4x4
         if bool(field):
             self.field = field
         else:
             self.field = [ [ -1 for i in range(self.width) ] for j in range(self.height) ]
 
-        self.piece = Piece((self.width//2)-2, -2, 0)
-        self.next_piece = Piece((self.width//2)-2, -2, 0)
+        if bool(piece_list):
+            self.piece_list = piece_list
+            self.piece = Piece((self.width//2)-2, -2, 0, self.piece_list.pop(0))
+            self.next_piece = Piece((self.width//2)-2, -2, 0, self.piece_list.pop(0))
+        else:
+            self.piece = Piece((self.width//2)-2, -2, 0)
+            self.next_piece = Piece((self.width//2)-2, -2, 0)
 
     def new_piece(self):
         self.piece = self.next_piece
-        self.next_piece = Piece((self.width//2)-2, -2, 0)
+        if bool(self.piece_list):
+            self.next_piece = Piece((self.width//2)-2, -2, 0, self.piece_list.pop(0))            
+        else:
+            self.next_piece = Piece((self.width//2)-2, -2, 0)
         self.pieces += 1
 
     def intersects(self):
@@ -106,8 +112,8 @@ class Tetris:
 
     #retorna is_illegal, lines_cleared
     def act(self, action):
-        self.piece.x = action[0]
-        self.piece.y = action[1]
+        self.piece.x = action[1]
+        self.piece.y = action[0]
         self.piece.rotation = action[2]
 
         #checa se da overlap
@@ -122,6 +128,8 @@ class Tetris:
             self.new_piece()
             #print("flutuando")
             return True, 0
+
+        #print("tudo certo")
 
         self.piece.y -= 1
         return False, self.freeze()
@@ -150,9 +158,14 @@ class GameRun:
 
         return True
 
+
+    def run_game(self, actions):
+        for action in actions:
+            self.run_frame(action)
+            time.sleep(1)
+
     def close_game(self):
         pygame.quit()
-
 
 if __name__ == '__main__':
 

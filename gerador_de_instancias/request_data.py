@@ -2,7 +2,10 @@ import random
 import requests
 import pickle
 import sys
+sys.path.insert(0, '..')
+from tetris_game import definitions
 from datetime import datetime
+
 
 if len(sys.argv) < 3 or not sys.argv[1].isnumeric() or not sys.argv[1].isnumeric():
     print("Informe o número de jogos e o número de jogadas")
@@ -13,22 +16,11 @@ number_of_plays = int(sys.argv[2])
 
 cols = 10
 rows = 20
-piece_vector = ['I', 'O', 'L', 'J', 'S', 'Z', 'T']
 url = "http://localhost:3000"
-
 recording_dir = "./data/"
 
-pieces = [
-        [[8, 9, 10, 11], [2, 6, 10,14]],                                        #I
-        [[9, 10, 13, 14]],                                                      #O
-        [[9, 10, 11, 13], [5, 6, 10, 14], [7, 9, 10, 11], [6, 10, 14, 15]],     #L
-        [[9, 10, 11, 15], [6, 10, 13, 14], [5, 9, 10, 11], [6, 7, 10, 14]],     #J
-        [[10, 11, 13, 14], [6, 10, 11, 15]],                                    #S
-        [[9, 10, 14, 15], [7, 10, 11, 14]],                                     #Z
-        [[9, 10, 11, 14], [6, 9, 10, 14], [6, 9, 10, 11], [6, 10, 11, 14]]      #T
-    ]
-
-
+piece_vector = definitions.piece_vector
+pieces = definitions.pieces
 
 def get_piece():
     return random.randrange(7)
