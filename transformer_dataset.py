@@ -14,7 +14,7 @@ class gen_dataset:
             game_dataset = []
             for play in game:
                 game_dataset.append(self.get_play(play, rtg))
-                rtg = game_dataset[-1][-1]
+                rtg = game_dataset[-1][-2]
             out.append(game_dataset)
         return out
 
@@ -25,4 +25,4 @@ class gen_dataset:
                 play["is_illegal"]
                 )
         #processar a informação como for necessário
-        return [play["board"], play["piece"], play["next_piece"], play["action"], rtg]
+        return [play["board"], play["piece"], play["next_piece"], play["action"], rtg, play["done"]]

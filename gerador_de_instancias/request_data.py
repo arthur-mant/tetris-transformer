@@ -143,7 +143,7 @@ class game:
             self.new_game()
             i = 0
             lost = False
-            while ((i < number_of_plays) and (not lost)):
+            while ((i < n_plays) and (not lost)):
                 nxt_board, path = self.treat_response(self.make_request(url))
                 if (nxt_board == -1):
                     lost = True
@@ -156,11 +156,13 @@ class game:
                     'next_piece': self.next_piece,
                     'action': piece_coordinates,
                     'lines_cleared': lines_cleared,
-                    'is_illegal': False
+                    'is_illegal': False,
+                    'done': False
                 })
                 self.update_game(nxt_board)
                 i = i+1
 
+            self.history[-1]["done"] = True
             self.completed_games.append(self.history)
             if n % 10 == 10-1:
                 self.save_player_data()

@@ -22,6 +22,8 @@ def print_play(play):
     print("Next Piece: ", play["next_piece"])
     print("Action: ", play["action"])
     print("Lines Cleared: ", play["lines_cleared"])
+    print("Is illegal: ", play["is_illegal"])
+    print("done: ", play["done"])
 
 f = open(filename, "rb")
 games = pickle.load(f)
