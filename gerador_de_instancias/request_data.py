@@ -154,8 +154,9 @@ class game:
                     'board': self.board,
                     'piece': self.piece,
                     'next_piece': self.next_piece,
-                    'coordinate': piece_coordinates,
-                    'lines_cleared': lines_cleared
+                    'action': piece_coordinates,
+                    'lines_cleared': lines_cleared,
+                    'is_illegal': False
                 })
                 self.update_game(nxt_board)
                 i = i+1

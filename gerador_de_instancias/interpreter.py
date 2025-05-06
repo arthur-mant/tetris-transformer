@@ -20,7 +20,7 @@ def print_play(play):
     print_board(play["board"])
     print("Piece: ", play["piece"])
     print("Next Piece: ", play["next_piece"])
-    print("Coordinate: ", play["coordinate"])
+    print("Action: ", play["action"])
     print("Lines Cleared: ", play["lines_cleared"])
 
 f = open(filename, "rb")

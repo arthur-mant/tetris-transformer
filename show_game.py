@@ -12,7 +12,7 @@ actions = []
 pieces = []
 
 for play in game:
-    actions.append(play["coordinate"])
+    actions.append(play["action"])
     pieces.append(play["piece"])
 
 #print(actions)

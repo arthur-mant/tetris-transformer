@@ -1,5 +1,4 @@
 import sys
-from tetris import tetris_interface
 
 class Rewards:
     #definição das constantes
@@ -8,7 +7,7 @@ class Rewards:
     crq = 1
     cphl = -10*1/20     #fração de quanto a penalidade vale em relação à recompensa
     cphq = -1*1/20
-    cpi = -2*tetris_interface.line_score[-1]
+    cpi = -2
     
     def __init__(self, reward_function, penalty_function):
         if reward_function == "l":
@@ -36,7 +35,8 @@ class Rewards:
     def penalty_height_linear(self, h):
         return cphq*(20-h)*(20-h)
     def penalty_illegal(self, is_illegal):
-        return cpi*int(is_illegal)
+        #retorna cpi * reward máximo de uma jogada, para forte desencorajamento
+        return cpi*int(is_illegal)*self.rew(4)
     def total_reward(lines, height, is_illegal):
         return self.rew(lines)+self.pen(height)+self.penalty_illegal(is_illegal)
 
