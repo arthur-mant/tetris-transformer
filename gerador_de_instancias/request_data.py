@@ -157,7 +157,8 @@ class game:
                     'action': piece_coordinates,
                     'lines_cleared': lines_cleared,
                     'is_illegal': False,
-                    'done': False
+                    'done': False,
+                    'timestep': i
                 })
                 self.update_game(nxt_board)
                 i = i+1
