@@ -6,9 +6,8 @@ class Rewards:
     crl = 1
     crq = 1
     cphl = -10*1/20     #fração de quanto a penalidade vale em relação à recompensa
-    cphq = -1*1/20
+    cphq = -1*1/100
     cpi = -2
-    cpl = -10
     
     def __init__(self, reward_function, penalty_function):
         if reward_function == "l":
@@ -32,14 +31,12 @@ class Rewards:
     def reward_quadratic(self, l):
         return self.crq*l*l
     def penalty_height_linear(self, h):
-        return cphl*(20-h)
+        return self.cphl*(20-h)
     def penalty_height_linear(self, h):
-        return cphq*(20-h)*(20-h)
+        return self.cphq*(20-h)*(20-h)
     def penalty_illegal(self, is_illegal):
         #retorna cpi * reward máximo de uma jogada, para forte desencorajamento
-        return cpi*int(is_illegal)*self.rew(4)
-    def penalty_loss(self, done):
-        return cpl*int(done)*self.rew(4)
+        return self.cpi*int(is_illegal)*self.rew(4)
     def total_reward(self, lines, height, is_illegal):
-        return self.rew(lines)+self.pen(height)+self.penalty_illegal(is_illegal)+self.penalty_loss(done)
+        return self.rew(lines)+self.pen(height)+self.penalty_illegal(is_illegal)
 

@@ -116,6 +116,15 @@ class game:
 
         return board, path
 
+    def convert_to_int(self, board):
+        out = []
+        for line in board:
+            aux = []
+            for elem in line:
+                aux.append(int(elem))
+            out.append(aux)
+        return out
+
     def update_game(self, board):
         self.board = board
         self.piece = self.next_piece
@@ -151,19 +160,17 @@ class game:
 
                 piece_coordinates, lines_cleared = self.board_to_coordinate(nxt_board)
                 self.history.append({
-                    'board': self.board,
+                    'board': self.convert_to_int(self.board),
                     'piece': self.piece,
                     'next_piece': self.next_piece,
                     'action': piece_coordinates,
                     'lines_cleared': lines_cleared,
                     'is_illegal': False,
-                    'done': False,
                     'timestep': i
                 })
                 self.update_game(nxt_board)
                 i = i+1
 
-            self.history[-1]["done"] = True
             self.completed_games.append(self.history)
             if n % 10 == 10-1:
                 self.save_player_data()
