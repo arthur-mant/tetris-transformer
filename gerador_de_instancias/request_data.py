@@ -44,18 +44,14 @@ class game:
     piece = get_piece()
     next_piece = get_piece()
     history = []
-    #route_history = []
     board = [[str(0) for _ in range(cols)] for _ in range(rows)]
     completed_games = []
 
     archive_filename = recording_dir+"n_games"+str(n_games)+"n_plays"+str(number_of_plays)+".pkl"
-    #route_archive_filename = recording_dir+"player/"+"routes_games"+str(n_games)+"size"+str(number_of_plays)+".pkl"
 
     def new_game(self):
         self.piece = get_piece()
         self.next_piece = get_piece()
-        self.history = []
-        #self.route_history = []
         self.board = [[str(0) for _ in range(cols)] for _ in range(rows)]
 
     def print_board(self, board):
@@ -130,14 +126,11 @@ class game:
         self.piece = self.next_piece
         self.next_piece = get_piece()
 
-    #def run_iteration(self):
-    #    self.update_game(self.treat_response(self.make_request(url)))
-
     def save_player_data(self):
 
-        print("Saved ", len(self.completed_games), " completed games to ", self.archive_filename)
+        print("Saved ", len(self.history), " completed games to ", self.archive_filename)
         fileObj = open(self.archive_filename, 'wb')
-        pickle.dump(self.completed_games, fileObj)
+        pickle.dump(self.history, fileObj)
         fileObj.close()
 
         #fileObj = open(self.route_archive_filename, 'wb')
@@ -165,13 +158,9 @@ class game:
                     'next_piece': self.next_piece,
                     'action': piece_coordinates,
                     'lines_cleared': lines_cleared,
-                    'is_illegal': False,
-                    'timestep': i
                 })
                 self.update_game(nxt_board)
                 i = i+1
-
-            self.completed_games.append(self.history)
             if n % 10 == 10-1:
                 self.save_player_data()
         self.save_player_data()

@@ -9,7 +9,7 @@ def print_board(board):
     for row in board:
         aux = "|"
         for elem in row:
-            aux += elem
+            aux += str(elem)
         print(aux, "|")
     aux = ""
     for _ in range(cols+2):
@@ -22,21 +22,10 @@ def print_play(play):
     print("Next Piece: ", play["next_piece"])
     print("Action: ", play["action"])
     print("Lines Cleared: ", play["lines_cleared"])
-    print("Is illegal: ", play["is_illegal"])
-    print("done: ", play["done"])
 
 f = open(filename, "rb")
-games = pickle.load(f)
+plays = pickle.load(f)
 
-game = random.choice(games)
-for play in game:
-    print_play(play)
-
-#play = random.choice(game)
-#print("random play selected from file:")
-#print_play(play)
-
-
-
-#print("Route: ", game[i]["route"])
+play = random.choice(plays)
+print_play(play)
 

@@ -34,9 +34,6 @@ class Rewards:
         return self.cphl*(20-h)
     def penalty_height_linear(self, h):
         return self.cphq*(20-h)*(20-h)
-    def penalty_illegal(self, is_illegal):
-        #retorna cpi * reward máximo de uma jogada, para forte desencorajamento
-        return self.cpi*int(is_illegal)*self.rew(4)
-    def total_reward(self, lines, height, is_illegal):
-        return self.rew(lines)+self.pen(height)+self.penalty_illegal(is_illegal)
+    def total_reward(self, lines, height):
+        return self.rew(lines)+self.pen(height)
 
