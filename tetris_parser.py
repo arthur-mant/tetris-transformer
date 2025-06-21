@@ -1,6 +1,24 @@
 from tetris_game import definitions
 from copy import deepcopy
 
+
+def print_board(board):
+    for i in range(len(board)):
+        aux = str(i)+"|"
+        if len(str(i)) < 2:
+            aux = "0"+aux
+        for elem in board[i]:
+            aux += str(elem)
+        print(aux, "|")
+    aux = ""
+    for _ in range(definitions.n_cols+5):
+        aux += "-"
+    print(aux)
+    aux = "   "
+    for j in range(definitions.n_cols):
+        aux += str(j)
+    print(aux)
+
 def get_afterstate(original_board, piece, action):
     board = deepcopy(original_board)
     for block in definitions.pieces[piece][action[2]]:
@@ -75,7 +93,85 @@ def get_all_afterstates_encodings(board, piece, next_piece):
     actions = get_possible_actions(board, piece)
     for action in actions:
         afterstate_encodings.append(encode_state(board, piece, next_piece, action))
-    return afterstate_encodings
+    return actions, afterstate_encodings
+
+def intersect(board, piece, y, x, rot):
+    for block in definitions.pieces[piece][rot]:
+        i = block//4
+        j = block%4
+        if y+i < 0 or y+i >= definitions.n_rows or x+j < 0 or x+j >= definitions.n_cols or board[y+i][x+j] == 1:
+            return True
+    return False
+
+def simple_move(board, piece, y, x, rot):
+    pos = [y, x, rot]
+    route = []
+    while pos[0] > 0:
+        pos[0] -= 1
+        if intersect(board, piece, pos[0], pos[1], pos[2]):
+            return None
+        route.append("B")
+    while pos[2] > 0:
+        pos[2] -= 1
+        if intersect(board, piece, pos[0], pos[1], pos[2]):
+            return None
+        route.append("R")
+    while pos[1] < (definitions.n_cols//2)-2:
+        pos[1] += 1
+        if intersect(board, piece, pos[0], pos[1], pos[2]):
+            return None
+        route.append("E")
+    while pos[1] > (definitions.n_cols//2)-2:
+        pos[1] -= 1
+        if intersect(board, piece, pos[0], pos[1], pos[2]):
+            return None
+        route.append("D")
+    return route
+
+def get_route(board, piece, y, x, rot, route):
+    if intersect(board, piece, y, x, rot):
+        return None
+    s_move = simple_move(board, piece, y, x, rot)
+    if s_move != None:
+        return list(reversed(route+s_move))
+
+    new_route = get_route(board, piece, y-1, x, rot, route+["B"])
+    if new_route != None:
+        return new_route
+
+    is_redundant = False
+    for elem in reversed(route):
+        if elem == "B" or elem == "E":
+            break
+        if elem == "D":
+            is_redundant = True
+    if not is_redundant:
+        new_route = get_route(board, piece, y, x+1, rot, route+["E"])
+        if new_route != None:
+            return new_route
+
+    is_redundant = False
+    for elem in reversed(route):
+        if elem == "B" or elem == "D":
+            break
+        if elem == "E":
+            is_redundant = True
+    if not is_redundant:
+        new_route = get_route(board, piece, y, x-1, rot, route+["D"])
+        if new_route != None:
+            return new_route
+    rot_count = 0 
+    for elem in reversed(route):
+        if elem == "B" or elem == "D" or elem == "E":
+            break
+        if elem == "R":
+            rot_count += 1
+    if rot_count+1 >= len(definitions.pieces[piece]):
+        new_route = get_route(board, piece, y, x, (rot-1)%len(definitions.pieces[piece]), route+["R"])
+        if new_route != None:
+            return new_route
+    return None
+    
 
 #for testing only
 if __name__ == '__main__':
@@ -83,60 +179,47 @@ if __name__ == '__main__':
     import sys
     import random
 
-    cols = 10
-    def print_board(board):
-        for i in range(len(board)):
-            aux = str(i)+"|"
-            if len(str(i)) < 2:
-                aux = "0"+aux
-            for elem in board[i]:
-                aux += str(elem)
-            print(aux, "|")
-        aux = ""
-        for _ in range(cols+5):
-            aux += "-"
-        print(aux)
-        aux = "   "
-        for j in range(cols):
-            aux += str(j)
-        print(aux)
-
     filename = sys.argv[1]
     f = open(filename, "rb")
     plays = pickle.load(f)
-    play = random.choice(plays)
+    #play = random.choice(plays)
 
-    print_board(play["board"])
-    print("Piece: ", definitions.piece_vector[play["piece"]])
-    print("Next Piece: ", definitions.piece_vector[play["next_piece"]])
-    print("Action: ", play["action"])
-    print("Lines Cleared: ", play["lines_cleared"])
+    for play in plays: 
 
-    new_board = get_afterstate(play["board"], play["piece"], play["action"])[0]
-    print_board(new_board)
+        print_board(play["board"])
+        print("Piece: ", definitions.piece_vector[play["piece"]])
+        print("Next Piece: ", definitions.piece_vector[play["next_piece"]])
+        print("Action: ", play["action"])
+        print("Lines Cleared: ", play["lines_cleared"])
 
-    possible_actions = get_possible_actions(play["board"], play["piece"])
+        new_board = get_afterstate(play["board"], play["piece"], play["action"])[0]
+        print_board(new_board)
+
+        print(get_route(play["board"], play["piece"], play["action"][0], play["action"][1], play["action"][2], []))
+
+    #possible_actions = get_possible_actions(play["board"], play["piece"])
 
     #print(possible_actions)
     #for a in possible_actions:
     #    print_board(get_afterstate(play["board"], play["piece"], a)[0])
 
-    slices = slice_board(new_board)
-    encodes = encode_state(play["board"], play["piece"], play["next_piece"], play["action"])
-    print("encode[0]: ", encodes[0][0])
+    #slices = slice_board(new_board)
+    #encodes = encode_state(play["board"], play["piece"], play["next_piece"], play["action"])
+    #print("encode[0]: ", encodes[0][0])
 
-    for s in range(len(slices)):
-        print("\n", s//7, s%7, encodes[0][1+s])
-        for i in range(4):
-            cum_str = ""
-            for j in range(4):
-                cum_str += str(slices[s][4*i+j])
-            print(cum_str)
+    #for s in range(len(slices)):
+    #    print("\n", s//7, s%7, encodes[0][1+s])
+    #    for i in range(4):
+    #        cum_str = ""
+    #        for j in range(4):
+    #            cum_str += str(slices[s][4*i+j])
+    #        print(cum_str)
         
 
 
-    encodings = get_all_afterstates_encodings(play["board"], play["piece"], play["next_piece"])
-    print(encodings)    
+    #encodings = get_all_afterstates_encodings(play["board"], play["piece"], play["next_piece"])
+    #print(encodings)
+    #print(len(encodings[0][0]))
 
 
 

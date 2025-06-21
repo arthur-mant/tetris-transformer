@@ -1,7 +1,7 @@
 import pygame
 import random
-from . import screen
-from . import definitions
+import screen
+import definitions
 import copy
 import time
 
@@ -32,8 +32,6 @@ class Tetris:
     lines = 0
     pieces = 0
     field = []
-    width = 10
-    height = 20
     level = 1
     fps = "?"
 
@@ -43,22 +41,22 @@ class Tetris:
         if bool(field):
             self.field = field
         else:
-            self.field = [ [ -1 for i in range(self.width) ] for j in range(self.height) ]
+            self.field = [ [ -1 for i in range(definitions.n_cols) ] for j in range(definitions.n_rows) ]
 
         if bool(piece_list):
             self.piece_list = piece_list
-            self.piece = Piece((self.width//2)-2, -2, 0, self.piece_list.pop(0))
-            self.next_piece = Piece((self.width//2)-2, -2, 0, self.piece_list.pop(0))
+            self.piece = Piece((definitions.n_cols//2)-2, -2, 0, self.piece_list.pop(0))
+            self.next_piece = Piece((definitions.n_cols//2)-2, -2, 0, self.piece_list.pop(0))
         else:
-            self.piece = Piece((self.width//2)-2, -2, 0)
-            self.next_piece = Piece((self.width//2)-2, -2, 0)
+            self.piece = Piece((definitions.n_cols//2)-2, -2, 0)
+            self.next_piece = Piece((definitions.n_cols//2)-2, -2, 0)
 
     def new_piece(self):
         self.piece = self.next_piece
         if bool(self.piece_list):
-            self.next_piece = Piece((self.width//2)-2, -2, 0, self.piece_list.pop(0))            
+            self.next_piece = Piece((definitions.n_cols//2)-2, -2, 0, self.piece_list.pop(0))            
         else:
-            self.next_piece = Piece((self.width//2)-2, -2, 0)
+            self.next_piece = Piece((definitions.n_cols//2)-2, -2, 0)
         self.pieces += 1
 
     def intersects(self):
@@ -69,8 +67,8 @@ class Tetris:
             j = block%4
 
             if  i+self.piece.y >= -2 and \
-                (i+self.piece.y > self.height-1 or \
-                j+self.piece.x > self.width-1 or \
+                (i+self.piece.y > definitions.n_rows-1 or \
+                j+self.piece.x > definitions.n_cols-1 or \
                 j+self.piece.x < 0 or \
                 self.field[i+self.piece.y][j+self.piece.x] > -1):
                     intersection = True
@@ -82,8 +80,8 @@ class Tetris:
         for block in self.piece.image():
             i = block//4
             j = block%4
-            if i+self.piece.y < self.height and i+self.piece.y >= 0 and \
-                j+self.piece.x < self.width and j+self.piece.x >= 0:
+            if i+self.piece.y < definitions.n_rows and i+self.piece.y >= 0 and \
+                j+self.piece.x < definitions.n_cols and j+self.piece.x >= 0:
                 self.field[i+self.piece.y][j+self.piece.x] = self.piece.type
         lines = self.break_lines()
         self.new_piece()
@@ -94,15 +92,15 @@ class Tetris:
 
     def break_lines(self):
         lines = 0
-        for i in range(1, self.height):
+        for i in range(1, definitions.n_rows):
             holes = 0
-            for j in range(self.width):
+            for j in range(definitions.n_cols):
                 if self.field[i][j] == -1:
                     holes += 1
             if holes == 0:
                 lines += 1
                 for k in range(i, 1, -1):
-                    for l in range(self.width):
+                    for l in range(definitions.n_cols):
                         self.field[k][l] = self.field[k-1][l]
         if lines > 0:
             self.score += line_score[lines-1]
@@ -111,7 +109,7 @@ class Tetris:
         return lines
 
     #retorna is_illegal, lines_cleared
-    def act(self, action):
+    def play(self, action):
         self.piece.x = action[1]
         self.piece.y = action[0]
         self.piece.rotation = action[2]
@@ -133,6 +131,21 @@ class Tetris:
 
         self.piece.y -= 1
         return False, self.freeze()
+
+    def play_route(self, route):
+        for elem in route:
+            if elem == "B":
+                self.piece.y += 1
+            elif elem == "D":
+                self.piece.x += 1
+            elif elem == "E":
+                self.piece.x -= 1
+            elif elem == "R":
+                self.piece.rotate()
+            if self.intersects():
+                print("TRIED FOLLOWING ROUTE BUT SOMETHING WENT WRONG")
+        self.freeze()
+
 
     def get_state(self):
         return self.field, self.piece, self.next_piece
