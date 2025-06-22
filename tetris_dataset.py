@@ -9,6 +9,11 @@ class dataset_manager:
     def __init__(self, reward_function, penalty_function):
         self.rewards_object = rewards.Rewards(reward_function, penalty_function)
 
+    def __len__(self):
+        return len()
+    def __getitem(self, idx):
+        return [idx]
+
 
     def gen_db(self, play_db):
         states = []
@@ -20,14 +25,16 @@ class dataset_manager:
             states += s
             rews += r
 
-        return states, rews
+        self.db = 
+
 
     def get_play(self, play):
         state = tetris_parser.encode_state(play["board"], play["piece"], play["next_piece"], play["action"])
 
         rew= self.rewards_object.total_reward(
                 play["lines_cleared"],
-                play["action"][0]
+                play["action"][0],
+                play["gameover"]
                 )
 
         return state, rew

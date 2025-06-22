@@ -149,6 +149,7 @@ class game:
                 nxt_board, path = self.treat_response(self.make_request(url))
                 if (nxt_board == -1):
                     lost = True
+                    self.history[-1]['gameover'] = True
                     break
 
                 piece_coordinates, lines_cleared = self.board_to_coordinate(nxt_board)
@@ -158,6 +159,7 @@ class game:
                     'next_piece': self.next_piece,
                     'action': piece_coordinates,
                     'lines_cleared': lines_cleared,
+                    'gameover': False
                 })
                 self.update_game(nxt_board)
                 i = i+1

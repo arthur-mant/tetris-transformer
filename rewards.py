@@ -21,7 +21,7 @@ class Rewards:
         if penalty_function == "l":
             self.pen = self.penalty_height_linear
         elif penalty_function == "q":
-            self.pen = self.penalty_height_linear
+            self.pen = self.penalty_height_quadratic
         else:
             print("invalid penalty function")
             sys.exit(1)
@@ -32,8 +32,11 @@ class Rewards:
         return self.crq*l*l
     def penalty_height_linear(self, h):
         return self.cphl*(20-h)
-    def penalty_height_linear(self, h):
+    def penalty_height_quadratic(self, h):
         return self.cphq*(20-h)*(20-h)
-    def total_reward(self, lines, height):
-        return self.rew(lines)+self.pen(height)
+    def penalty_gameover(self, gameover):
+        #penaliza 2 tetris quando perde
+        return int(gameover)*(-2)*self.rew(4)
+    def total_reward(self, lines, height, gameover):
+        return self.rew(lines)+self.pen(height)+self.penalty_gameover(gameover)
 

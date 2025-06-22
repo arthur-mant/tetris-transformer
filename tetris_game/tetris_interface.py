@@ -144,7 +144,7 @@ class Tetris:
                 self.piece.rotate()
             if self.intersects():
                 print("TRIED FOLLOWING ROUTE BUT SOMETHING WENT WRONG")
-        self.freeze()
+        return self.freeze()
 
 
     def get_state(self):

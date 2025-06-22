@@ -17,7 +17,7 @@ class player():
             play = actions[np.argmax(afterstate_values)]
             route = tetris_parser.get_route(board, piece, play[0], play[1], play[2], [])
             if route != None:
-                return play
+                return play, route
             print("removed unviable action")
             idx = actions.index(play)
             actions.remove(idx)
@@ -29,7 +29,7 @@ class player():
             play = random.choice(possible_actions)
             route = tetris_parser.get_route(board, piece, play[0], play[1], play[2], [])
             if route != None:
-                return play
+                return play, route
             print("removed unviable action")
             possible_actions.remove(play)
 
