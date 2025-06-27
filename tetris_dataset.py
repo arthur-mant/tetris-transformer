@@ -12,33 +12,28 @@ class dataset_manager:
     def __len__(self):
         return len()
     def __getitem(self, idx):
-        return [idx]
+        return self.db[idx]
 
 
-    def gen_db(self, play_db):
-        states = []
-        actions = []
-        rews = []
+    def gen_train_db(self, game_db, calculate_target_q):
+        self.db = []
+        for game in game_db:
+            for i in range(len(game)):
+                #se não perdeu mas acabou o episodio (chego no max de jogadas)
+                if i == len(game)-1 and not game[i]['gameover']:
+                    break
+                rew = self.rewards_object.total_reward(
+                        game[i]["lines_cleared"],
+                        game[i]["action"][0],
+                        game[i]["gameover"]
+                        )
+                if game[i]['gameover']:
+                    target_q = rew
+                else:
+                    target_q = calculate_target_q(rew, [game[i+1]["board"], game[i+1]["piece"], game[i+1]["next_piece"]])
 
-        for play in play_db:
-            s, r = self.get_play(play)
-            states += s
-            rews += r
-
-        self.db = 
-
-
-    def get_play(self, play):
-        state = tetris_parser.encode_state(play["board"], play["piece"], play["next_piece"], play["action"])
-
-        rew= self.rewards_object.total_reward(
-                play["lines_cleared"],
-                play["action"][0],
-                play["gameover"]
-                )
-
-        return state, rew
-
+                state_encoding = tetris_parser.encode_state(game[i]["board"], game[i]["piece"], game[i]["next_piece"], game[i]["action"])
+                self.db.append([state_encoding, target_q])
 
 if __name__ == '__main__':
     pass

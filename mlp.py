@@ -11,13 +11,13 @@ class MLP(nn.Module):
         self.linear_relu_stack = nn.Sequential(
             nn.Linear(120, 120),
             nn.ReLU(),
-            nn.Linear(120, 60),
+            nn.Linear(120, 120),
             nn.ReLU(),
-            nn.Linear(60, 30),
+            nn.Linear(120, 120),
             nn.ReLU(),
-            nn.Linear(30, 10),
+            nn.Linear(120, 30),
             nn.ReLU(),
-            nn.Linear(10, 1),
+            nn.Linear(30, 1),
         )
     def forward(self, x):
         logits = self.linear_relu_stack(x)

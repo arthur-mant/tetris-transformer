@@ -143,17 +143,18 @@ class game:
         print("Total plays: ", n*n_plays)
         for n in range(n):
             self.new_game()
+            game_data = []
             i = 0
             lost = False
             while ((i < n_plays) and (not lost)):
                 nxt_board, path = self.treat_response(self.make_request(url))
                 if (nxt_board == -1):
                     lost = True
-                    self.history[-1]['gameover'] = True
+                    game_data[-1]['gameover'] = True
                     break
 
                 piece_coordinates, lines_cleared = self.board_to_coordinate(nxt_board)
-                self.history.append({
+                game_data.append({
                     'board': self.convert_to_int(self.board),
                     'piece': self.piece,
                     'next_piece': self.next_piece,
@@ -163,6 +164,7 @@ class game:
                 })
                 self.update_game(nxt_board)
                 i = i+1
+            self.history.append(game_data)
             if n % 10 == 10-1:
                 self.save_player_data()
         self.save_player_data()
