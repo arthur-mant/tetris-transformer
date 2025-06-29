@@ -15,9 +15,9 @@ class MLP(nn.Module):
             nn.ReLU(),
             nn.Linear(120, 120),
             nn.ReLU(),
-            nn.Linear(120, 30),
+            nn.Linear(120, 120),
             nn.ReLU(),
-            nn.Linear(30, 1),
+            nn.Linear(120, 1),
         )
     def forward(self, x):
         logits = self.linear_relu_stack(x)
