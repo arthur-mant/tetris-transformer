@@ -2,9 +2,8 @@ from tetris-dataset import dataset_manager
 import tetris_parser
 import numpy as np
 import random
+import torch
 from copy import deepcopy
-
-db_file = 
 
 class player():
     def __init__(self, model):
@@ -15,7 +14,10 @@ class player():
        self.stable_model.load_state_dict(self.model.state_dict()) 
 
     def set_epsilon(self, num_episode)
-        self.epsilon = epsilon
+        self.epsilon = 0.3-0.003*num_episode
+
+    def save_model(self, path):
+        torch.save(self.model.state_dict(), path)
 
     def best_action(self, board, piece, next_piece, model):
         actions, afterstate_encodings = tetris_parser.get_all_afterstates_encodings(board, piece, next_piece)
@@ -44,7 +46,7 @@ class player():
 
 
     def act(self, board, piece, next_piece):
-        if random.random() < epsilon:
+        if random.random() < self.epsilon:
             return self.random_action(board, piece)
         else:
             action, route, _ = self.best_action(board, piece, next_piece, self.model)
