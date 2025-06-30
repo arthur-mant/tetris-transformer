@@ -24,8 +24,8 @@ def print_play(play):
     print("Lines Cleared: ", play["lines_cleared"])
 
 f = open(filename, "rb")
-plays = pickle.load(f)
-
-play = random.choice(plays)
+games = pickle.load(f)
+game = random.choice(games)
+play = random.choice(game)
 print_play(play)
 

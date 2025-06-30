@@ -246,16 +246,10 @@ class game:
                     deepest_line_cleared = max(deepest_line_cleared, i)
             lines_cleared = max(lines_cleared, depth_count)
 
-        filled = []
-        for j in range(cols):
-            if self.board[deepest_line_cleared][j] == '0':
-                filled.append(j)
-
-
         possible_pos = []
 
         for i in range(4):
-            for j in range(4):
+            for j in range(-2, 8):
                 for r in range(len(pieces[self.piece])):
                     pos_v = []
                     for e in pieces[self.piece][r]:
@@ -263,129 +257,40 @@ class game:
                         l = e % 4
 
                         line_index = deepest_line_cleared -3+i +k
-                        column_index = filled[0]-3+j +l
+                        column_index = j+l
 
                         if line_index < rows and column_index < cols and self.board[line_index][column_index] == '0':
                             pos_v.append([line_index, column_index, r])
 
                     if (len(pos_v) == 4):
-                        num_bottom = 0
-                        for e in pos_v:
-                            if (e[0] == deepest_line_cleared):
-                                num_bottom += 1
-                        if num_bottom == len(filled):
-                            shift_down = -1
-                            end = False
+                        shift_down = -1
+                        end = False
 
-                            while not end:
-                                shift_down += 1
+                        while not end:
+                            shift_down += 1
 
-                                for e in pieces[self.piece][r]:
-                                    k = e // 4
-                                    l = e % 4
+                            for e in pieces[self.piece][r]:
+                                k = e // 4
+                                l = e % 4
 
-                                    line_index = deepest_line_cleared -3+i +k +shift_down+1
-                                    column_index = filled[0]-3+j +l
+                                line_index = deepest_line_cleared -3+i +k +shift_down+1
+                                column_index = j +l
 
-                                    if not (line_index < rows and column_index < cols and self.board[line_index][column_index] == '0'):
-                                        end = True
+                                if not (line_index < rows and column_index < cols and self.board[line_index][column_index] == '0'):
+                                    end = True
 
-                            possible_pos.append((deepest_line_cleared-3+i+shift_down, filled[0]-3+j, r))
+                            possible_pos.append((deepest_line_cleared-3+i+shift_down, j, r))
         for pos in possible_pos:
             if self.simulate_and_check(pos, new_board):
                 return pos, lines_cleared
+        print("something is wrong....")
+        print(possible_pos)
+        self.print_board(self.board)
+        self.print_board(new_board)
+        self.print_board(piece_board)
         return None, None
 
-    def gen_route(self, path):
 
-        #L = translacao pra esquerda
-        #R = translacao pra direita
-        #A = rotacao horaria ("normal")
-        #B = rotacao anti-horaria ("invertida")
-
-
-        route = ""
-        desvio = 0
-        for i in range(len(path)):
-            if path[i] in [".", "E", "F", "L", "I", "G", "R", "A", "B", "D"]:
-                if path[i] in ["E", "F", "L"]:
-                    route += "L"
-                if path[i] in ["I", "G", "R"]:
-                    route += "R"
-                if path[i] in ["E", "I", "A"]:
-                    route += "A"
-                if path[i] in ["F", "G", "B"]:
-                    route += "B"
-
-                if path[i] == "D":
-                    route += "D"
-                    desvio = ((i % 2) + 1) % 2
-                    print("Found a D, expect weird untested behaviour")
-                    break
-
-                if ((i % 2) + desvio % 2) == 1:
-                    route += "D"
-        return route
-
-    #debugging methods
-
-    def find_tuck_path(self, path):
-        for i in range(1, len(path)):
-            if path[i-1] == '.' and path[i] != '*' and path[i] != '^' and path[i] != '.':
-                return True
-        return False
-
-    def fall_length(self, path):
-        length = 0
-        for i in range(len(path)):
-            if path[i] == "D":
-                print("Down is being used PANIC")
-                sys.exit(0)
-                return 0
-            if path[i] != "*" and path[i] != "^" and path[i] != ".":
-                aux = i
-
-        return aux+1
-
-    def get_router_data(self):
-
-        for i in range(3):
-            found = False
-            while not found:
-
-                nxt_board, path = self.treat_response(self.make_request(url))
-                found = self.find_tuck_path(path)
-
-                aux_board = self.board
-
-                aux_coordinate = self.board_to_coordinate(nxt_board)
-                self.update_game(nxt_board)
-
-
-            print(aux_coordinate)
-            print("Fall: ", aux_coordinate[0]+2)
-
-            print(path)
-
-            print("Route: ", self.gen_route(path))
-
-            print("Fall length: ", self.fall_length(path))
-
-            self.print_board(aux_board)
-            self.print_board(nxt_board)
-            piece_board = matrix_sub(nxt_board, aux_board)
-            self.print_board(piece_board)
-
-    def test_get_data(self):
-        for i in range(50):
-            nxt_board, path = self.treat_response(self.make_request(url))
-
-            piece_board = matrix_sub(nxt_board, self.board)
-
-            self.print_piece()
-            self.print_board(piece_board)
-
-            self.update_game(nxt_board)
 
 
 
@@ -393,7 +298,5 @@ class game:
 x = game()
 
 x.generate_player_db(n_games, number_of_plays)
-#x.get_router_data()
-#x.test_get_data()
 
 #print(piecev_to_matrix(0,0))
