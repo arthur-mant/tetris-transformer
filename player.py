@@ -16,7 +16,7 @@ class player():
        self.stable_model.load_state_dict(self.model.state_dict()) 
 
     def update_epsilon(self):
-        if self.epsilon > epsilon_decay:
+        if self.epsilon > self.epsilon_decay:
             self.epsilon -= self.epsilon_decay
 
     def save_model(self, path):
@@ -24,27 +24,28 @@ class player():
 
     def best_action(self, board, piece, next_piece, model):
         actions, afterstate_encodings = tetris_parser.get_all_afterstates_encodings(board, piece, next_piece)
-        afterstate_values = model(afterstate_encodings).detach().numpy()
+        afterstate_values = list(model(afterstate_encodings).detach().numpy())
         
         while len(actions) > 0:
             idx_best_action = np.argmax(afterstate_values) 
             best_action = actions[idx_best_action]
-            route = tetris_parser.get_route(board, piece, best_action[0], best_action[1], best_action[2], [])
+            route = tetris_parser.get_route(board, piece, best_action[0], best_action[1], best_action[2], [], [])
             if route != None:
                 return best_action, route, afterstate_values[idx_best_action]
-            print("removed unviable action")
-            idx = actions.index(play)
-            actions.remove(idx)
-            afterstate_values.remove(idx)
+            #print("removed unviable action: ", best_action)
+            idx = actions.index(best_action)
+            del actions[idx]
+            del afterstate_values[idx]
+            #print("actions left: ", actions)
 
     def random_action(self, board, piece):
         possible_actions = tetris_parser.get_possible_actions(board, piece)
         while len(possible_actions) > 0:
             play = random.choice(possible_actions)
-            route = tetris_parser.get_route(board, piece, play[0], play[1], play[2], [])
+            route = tetris_parser.get_route(board, piece, play[0], play[1], play[2], [], [])
             if route != None:
                 return play, route
-            print("removed unviable action")
+            #print("removed unviable action")
             possible_actions.remove(play)
 
 

@@ -1,8 +1,27 @@
 from tetris_game import tetris_interface
+from tetris_game import definitions
 import tetris_parser
 import graphs
+import numpy as np
 from torch import nn
 from torch import optim
+
+#############
+#DEBUG TOOL
+
+def print_board(board):
+    for i in range(len(board)):
+        aux = "|"
+        for elem in board[i]:
+            aux += "{:>2}".format(elem)
+        print("{:>2}".format(i),aux, "|")
+    aux = ""
+    for _ in range(len(board[0])+2):
+        aux += "-"
+    print(aux)
+
+##############
+
 
 class qlearning():
     def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, gamma, epochs, batch_size, lr):
@@ -32,6 +51,12 @@ class qlearning():
                     break
                 board, piece, next_piece = game.get_state()
                 action, route = self.player.act(board, piece, next_piece)
+                
+                #print("piece: ", definitions.piece_vector[piece])
+                #print("route: ", route)
+                #print_board(board)
+
+
                 lines_cleared = game.play_route(route)
                 game_history.append({
                     'board': board,
@@ -41,6 +66,7 @@ class qlearning():
                     'lines_cleared': lines_cleared,
                     'gameover': game.gameover
                 })
+            print("game ", i, " score: ", game.score)
             scores.append(game.score)
             games_db.append(game_history)
             
@@ -75,14 +101,19 @@ class qlearning():
 
         torch.nn.utils.clip_grad_value_(self.player.model.parameters(), 10)
         self.optimizer.step()
-        self.acc_loss[episode] += loss.item()
+        if episode >= 0:
+            self.acc_loss[episode] += loss.item()
 
     def main_loop(self):
+        print("training on db")
+        for _ in range(10*self.epochs*(len(self.dataset_manager)//(self.batch_size))):
+            self.training_loop(-1)
         for i in range(self.n_episodes):
             self.dataset_manager.gen_train_db(
                 self.gen_games_db()
             )
-            for _ in range(self.epochs*(len(self.dataset_manager)//(2*self.batch_size))):
+            print("starting training, episode ", i)
+            for _ in range(self.epochs*(len(self.dataset_manager)//(self.batch_size))):
                 self.training_loop(i)
             self.player.update_stable_model()
             self.player.update_epsilon()

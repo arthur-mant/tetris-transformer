@@ -44,7 +44,7 @@ def get_afterstate(original_board, piece, action):
 
 def get_possible_actions(board, piece):
     actions = []
-    for x in range(len(board)):
+    for x in range(-2, len(board)):
         for y in range(-2, len(board[x])):
             for rot in range(len(definitions.pieces[piece])):
                 is_floating = True
@@ -52,13 +52,13 @@ def get_possible_actions(board, piece):
                 for block in definitions.pieces[piece][rot]:
                     i = block//4
                     j = block%4
-                    if (x+i < 0) or (x+i >= len(board)) or (y+j < 0) or (y+j >= len(board[x])):
+                    if (x+i >= len(board)) or (y+j < 0) or (y+j >= len(board[x])):
                         is_invalid = True
                         break
-                    if board[x+i][y+j] == 1:
+                    if (x+i) >= 0 and board[x+i][y+j] == 1:
                         is_invalid = True
                         break
-                    if (x+i+1 >= len(board)) or (board[x+i+1][y+j] == 1):
+                    if x+i+1 >= 0 and ((x+i+1 >= len(board)) or (board[x+i+1][y+j] == 1)):
                         is_floating = False
                 if not is_invalid and not is_floating:
                     actions.append([x, y, rot])
@@ -101,7 +101,11 @@ def intersect(board, piece, y, x, rot):
     for block in definitions.pieces[piece][rot]:
         i = block//4
         j = block%4
-        if y+i < 0 or y+i >= definitions.n_rows or x+j < 0 or x+j >= definitions.n_cols or board[y+i][x+j] == 1:
+        if y <-2:
+            return True
+        if y+i < 0:
+            break
+        if x+j < 0 or y+i >= definitions.n_rows or x+j >= definitions.n_cols or board[y+i][x+j] == 1:
             return True
     return False
 
@@ -113,11 +117,6 @@ def simple_move(board, piece, y, x, rot):
         if intersect(board, piece, pos[0], pos[1], pos[2]):
             return None
         route.append("B")
-    while pos[2] > 0:
-        pos[2] -= 1
-        if intersect(board, piece, pos[0], pos[1], pos[2]):
-            return None
-        route.append("R")
     while pos[1] < (definitions.n_cols//2)-2:
         pos[1] += 1
         if intersect(board, piece, pos[0], pos[1], pos[2]):
@@ -128,16 +127,28 @@ def simple_move(board, piece, y, x, rot):
         if intersect(board, piece, pos[0], pos[1], pos[2]):
             return None
         route.append("D")
+    while pos[2] > 0:
+        pos[2] -= 1
+        if intersect(board, piece, pos[0], pos[1], pos[2]):
+            return None
+        route.append("R")
+    while pos[0] > -2:
+        pos[0] -= 1
+        if intersect(board, piece, pos[0], pos[1], pos[2]):
+            return None
+        route.append("B")
     return route
 
-def get_route(board, piece, y, x, rot, route):
-    if intersect(board, piece, y, x, rot):
+def get_route(board, piece, y, x, rot, route, visited):
+    if (y, x, rot) in visited or intersect(board, piece, y, x, rot):
         return None
+    #print(y, x, rot)
+    visited.append((y, x, rot))
     s_move = simple_move(board, piece, y, x, rot)
     if s_move != None:
         return list(reversed(route+s_move))
 
-    new_route = get_route(board, piece, y-1, x, rot, route+["B"])
+    new_route = get_route(board, piece, y-1, x, rot, route+["B"], visited)
     if new_route != None:
         return new_route
 
@@ -148,7 +159,7 @@ def get_route(board, piece, y, x, rot, route):
         if elem == "D":
             is_redundant = True
     if not is_redundant:
-        new_route = get_route(board, piece, y, x+1, rot, route+["E"])
+        new_route = get_route(board, piece, y, x+1, rot, route+["E"], visited)
         if new_route != None:
             return new_route
 
@@ -159,7 +170,7 @@ def get_route(board, piece, y, x, rot, route):
         if elem == "E":
             is_redundant = True
     if not is_redundant:
-        new_route = get_route(board, piece, y, x-1, rot, route+["D"])
+        new_route = get_route(board, piece, y, x-1, rot, route+["D"], visited)
         if new_route != None:
             return new_route
     rot_count = 0 
@@ -168,8 +179,8 @@ def get_route(board, piece, y, x, rot, route):
             break
         if elem == "R":
             rot_count += 1
-    if rot_count+1 >= len(definitions.pieces[piece]):
-        new_route = get_route(board, piece, y, x, (rot-1)%len(definitions.pieces[piece]), route+["R"])
+    if rot_count+1 < len(definitions.pieces[piece]):
+        new_route = get_route(board, piece, y, x, (rot-1)%len(definitions.pieces[piece]), route+["R"], visited)
         if new_route != None:
             return new_route
     return None

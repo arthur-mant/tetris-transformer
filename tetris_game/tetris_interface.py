@@ -59,20 +59,19 @@ class Tetris:
         self.pieces += 1
 
     def intersects(self):
-        intersection = False
-
         for block in self.piece.image():
             i = block//4
             j = block%4
-
-            if  i+self.piece.y >= -2 and \
-                (i+self.piece.y > definitions.n_rows-1 or \
+            if i+self.piece.y == -1 or i+self.piece.y == -2:
+                break
+            if  i+self.piece.y < -2 or \
+                i+self.piece.y > definitions.n_rows-1 or \
                 j+self.piece.x > definitions.n_cols-1 or \
                 j+self.piece.x < 0 or \
-                self.field[i+self.piece.y][j+self.piece.x] > -1):
-                    intersection = True
-
-        return intersection
+                self.field[i+self.piece.y][j+self.piece.x] > -1:
+                    #print(i+self.piece.y, j+self.piece.x)
+                    return True
+        return False
 
     def freeze(self):
         #self.score += self.piece.y+2
@@ -142,10 +141,21 @@ class Tetris:
             elif elem == "R":
                 self.piece.rotate()
             if self.intersects():
-                print("TRIED FOLLOWING ROUTE BUT SOMETHING WENT WRONG")
+                print("TRIED FOLLOWING ROUTE BUT SOMETHING WENT WRONG WHEN", elem)
         return self.freeze()
 
+    def translate_board(self, board):
+        new_board = []
+        for row in board:
+            new_row = []
+            for i in row:
+                if i == -1:
+                    new_row.append(0)
+                else:
+                    new_row.append(1)
+            new_board.append(new_row)
+        return new_board
 
     def get_state(self):
-        return self.field, self.piece.type, self.next_piece.type
+        return self.translate_board(self.field), self.piece.type, self.next_piece.type
 
