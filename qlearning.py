@@ -1,7 +1,6 @@
-import tetris_interface
+from tetris_game import tetris_interface
 import tetris_parser
 import graphs
-from torch.utils.data import Dataloader
 from torch import nn
 from torch import optim
 
@@ -28,11 +27,11 @@ class qlearning():
             game = tetris_interface.Tetris()
             game_history = []
 
-            for play in range(self.max_plays)
+            for play in range(self.max_plays):
                 if game.gameover:
                     break
                 board, piece, next_piece = game.get_state()
-                action, route = player.act(board, piece, next_piece)
+                action, route = self.player.act(board, piece, next_piece)
                 lines_cleared = game.play_route(route)
                 game_history.append({
                     'board': board,
@@ -54,7 +53,7 @@ class qlearning():
         return reward+self.gamma*(max_next_state_value)
 
     def training_loop(self, episode):
-        if len(self.dataset_manager) > self.batch_size
+        if len(self.dataset_manager) > self.batch_size:
             return
         #state, action, reward, next_state
         batch = self.dataset_manager.sample(self.batch_size)
@@ -79,13 +78,14 @@ class qlearning():
         self.acc_loss[episode] += loss.item()
 
     def main_loop(self):
-        for i in n_episodes:
+        for i in range(self.n_episodes):
             self.dataset_manager.gen_train_db(
                 self.gen_games_db()
             )
             for _ in range(self.epochs*(len(self.dataset_manager)//(2*self.batch_size))):
                 self.training_loop(i)
             self.player.update_stable_model()
+            self.player.update_epsilon()
 
             print("Episode: ", i, " Loss: ", self.acc_loss[i], " Mean Score: ", self.mean_score[i], " Max Score: ", self.max_score[i])
 

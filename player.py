@@ -1,4 +1,4 @@
-from tetris-dataset import dataset_manager
+from tetris_dataset import dataset_manager
 import tetris_parser
 import numpy as np
 import random
@@ -6,29 +6,32 @@ import torch
 from copy import deepcopy
 
 class player():
-    def __init__(self, model):
+    def __init__(self, model, epsilon, epsilon_decay):
         self.model = model
         self.stable_model = deepcopy(model)
+        self.epsilon = epsilon
+        self.epsilon_decay = epsilon_decay
 
-    def update_stable_model(self)
+    def update_stable_model(self):
        self.stable_model.load_state_dict(self.model.state_dict()) 
 
-    def set_epsilon(self, num_episode)
-        self.epsilon = 0.3-0.003*num_episode
+    def update_epsilon(self):
+        if self.epsilon > epsilon_decay:
+            self.epsilon -= self.epsilon_decay
 
     def save_model(self, path):
         torch.save(self.model.state_dict(), path)
 
     def best_action(self, board, piece, next_piece, model):
         actions, afterstate_encodings = tetris_parser.get_all_afterstates_encodings(board, piece, next_piece)
-        afterstate_values = model(afterstate_encodings)
+        afterstate_values = model(afterstate_encodings).detach().numpy()
         
         while len(actions) > 0:
             idx_best_action = np.argmax(afterstate_values) 
-            best_action = actions[idx_best_play]
+            best_action = actions[idx_best_action]
             route = tetris_parser.get_route(board, piece, best_action[0], best_action[1], best_action[2], [])
             if route != None:
-                return play, route, afterstate_values[idx_best_action]
+                return best_action, route, afterstate_values[idx_best_action]
             print("removed unviable action")
             idx = actions.index(play)
             actions.remove(idx)

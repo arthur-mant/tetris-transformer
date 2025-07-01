@@ -19,6 +19,7 @@ class dataset_manager():
         return random.sample(selb.db, batch_size)
 
     def gen_train_db(self, game_db):
+
         for game in game_db:
             for i in range(len(game)):
                 #se não perdeu mas acabou o episodio (chego no max de jogadas)
@@ -35,7 +36,7 @@ class dataset_manager():
                     next_state = None
                 else:
                     next_state = (game[i+1]["board"], game[i+1]["piece"], game[i+1]["next_piece"])
-                db.append((state, action, rew, next_state))
+                self.db.append((state, action, rew, next_state))
 
 if __name__ == '__main__':
     pass

@@ -1,5 +1,6 @@
 from tetris_game import definitions
 from copy import deepcopy
+import torch
 
 
 def print_board(board):
@@ -86,14 +87,15 @@ def encode_state(board, piece, next_piece, action):
             cumsum += elem*multiplier
             multiplier *= 2
         state.append(cumsum)
-    return state, lines
+    return torch.tensor(state, dtype=torch.float, requires_grad=False)#, lines
 
 def get_all_afterstates_encodings(board, piece, next_piece):
     afterstate_encodings = []
     actions = get_possible_actions(board, piece)
     for action in actions:
         afterstate_encodings.append(encode_state(board, piece, next_piece, action))
-    return actions, afterstate_encodings
+    
+    return actions, torch.stack(afterstate_encodings)
 
 def intersect(board, piece, y, x, rot):
     for block in definitions.pieces[piece][rot]:

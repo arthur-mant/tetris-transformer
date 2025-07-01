@@ -1,7 +1,6 @@
-import pygame
 import random
-import screen
-import definitions
+from tetris_game import screen
+from tetris_game import definitions
 import copy
 import time
 
@@ -43,8 +42,8 @@ class Tetris:
         else:
             self.field = [ [ -1 for i in range(definitions.n_cols) ] for j in range(definitions.n_rows) ]
 
+        self.piece_list = piece_list
         if bool(piece_list):
-            self.piece_list = piece_list
             self.piece = Piece((definitions.n_cols//2)-2, -2, 0, self.piece_list.pop(0))
             self.next_piece = Piece((definitions.n_cols//2)-2, -2, 0, self.piece_list.pop(0))
         else:
@@ -148,42 +147,5 @@ class Tetris:
 
 
     def get_state(self):
-        return self.field, self.piece, self.next_piece
+        return self.field, self.piece.type, self.next_piece.type
 
-class GameRun:
-    game = None
-    screen_i = None
-
-    def __init__(self, game, use_screen=True):
-        pygame.init()
-        self.game = game
-
-        if bool(use_screen):
-            self.screen_i = screen.Screen(pygame, 500, 500, 100, 60, 20)
-
-    def run_frame(self, action):
-
-        if bool(action):
-            self.game.act(action)
-
-        if bool(self.screen_i):
-            self.screen_i.update_screen(self.game)
-
-        return True
-
-
-    def run_game(self, actions):
-        for action in actions:
-            self.run_frame(action)
-            time.sleep(1)
-
-    def close_game(self):
-        pygame.quit()
-
-if __name__ == '__main__':
-
-    game_run = GameRun(Tetris(), use_screen=True)
-    action = None
-    while game_run.run_frame(action):
-        action = [int(i) for i in input().split()]
-        
