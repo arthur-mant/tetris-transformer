@@ -6,6 +6,9 @@ sys.path.insert(0, '..')
 from tetris_game import definitions
 from datetime import datetime
 
+sys.path.append("/home/lann/mestrado/tetris-transformer/")
+import tetris_parser
+
 
 if len(sys.argv) < 3 or not sys.argv[1].isnumeric() or not sys.argv[1].isnumeric():
     print("Informe o número de jogos e o número de jogadas")
@@ -61,7 +64,7 @@ class game:
                 aux += "0"
             aux += str(row)+" |"
             for elem in board[row]:
-                aux += elem
+                aux += str(elem)
             print(aux, "|")
         aux = ""
         for _ in range(cols+2+4):
@@ -154,6 +157,10 @@ class game:
                     break
 
                 piece_coordinates, lines_cleared = self.board_to_coordinate(nxt_board)
+                if piece_coordinates == None:
+                    print("ERROR: NULL ACTION")
+                    #self.print_board(self.board)
+                    #self.print_board(nxt_board)
                 game_data.append({
                     'board': self.convert_to_int(self.board),
                     'piece': self.piece,
@@ -170,22 +177,26 @@ class game:
         self.save_player_data()
 
     def get_coordinates(self, piece_board):
+
+        blocks = 0
+        for i in piece_board:
+            for j in i:
+                blocks += int(j)
         for i in range(-2, rows):
             for j in range(-2, cols):
-                m = []
-                for k in range(4):
-                    for l in range(4):
-                        if  (i+k >= 0) and (j+l >= 0) and \
-                            (i+k < len(self.board)) and \
-                            (j+l < len(self.board[0])) and \
-                            (piece_board[i+k][j+l] == '1'):
-
-                            m.append(k*4+l)
-
-                if (len(m) == 4):
-                    for k in range(len(pieces[self.piece])):
-                        if vector_equal(m, pieces[self.piece][k]):
-                            return i, j, k
+                for r in range(len(pieces[self.piece])):
+                    viable = True
+                    new_blocks = 0
+                    for elem in pieces[self.piece][r]:
+                        k = elem // 4
+                        l = elem % 4
+                        if i+k < -2 or (i+k) >= len(self.board) or j+l < 0 or j+l >= len(self.board[0]) or (i+k >=0 and piece_board[i+k][j+l] == '0'):
+                            viable = False
+                            break
+                        if (i+k >=0 and piece_board[i+k][j+l] == '1'):
+                            new_blocks += 1
+                    if blocks == new_blocks and viable:
+                        return i, j, r
         return None
 
     def simulate_and_check(self, pos, new_board):
@@ -200,11 +211,14 @@ class game:
             i = e // 4
             j = e % 4
 
-            if aux_board[pos[0]+i][pos[1]+j] == '0':
+            if pos[0]+i == -1 or pos[0]+i == -2:
+                pass
+            elif aux_board[pos[0]+i][pos[1]+j] == '0':
                 aux_board[pos[0]+i][pos[1]+j] = '1'
             else:
+                print(pos)
                 print("ERROR: Wrong position when decoding line board")
-
+                return False
 
         for i in range(rows):
             complete = True
@@ -215,8 +229,8 @@ class game:
                 for k in range(i, 0, -1):
                     for l in range(cols):
                         aux_board[k][l] = aux_board[k-1][l]
-
-
+                for l in range(cols):
+                    aux_board[0][l] = '0'
 
         for i in range(rows):
             for j in range(cols):
@@ -227,6 +241,7 @@ class game:
     def board_to_coordinate(self, new_board):
 
         piece_board = matrix_sub(new_board, self.board)
+        #self.print_board(piece_board)
 
         cleared_lines = False
         for i in range(rows):
@@ -234,69 +249,33 @@ class game:
                 if piece_board[i][j] == '-1':
                     cleared_lines = True
         if not cleared_lines:
-            return self.get_coordinates(piece_board), 0
+            pos = self.get_coordinates(piece_board)
+            if self.simulate_and_check(pos, new_board):
+                return pos, 0
+            else:
+                print("ERROR: simulation failed")
+                print(pos)
+                print(self.board)
+                print(new_board)
+                print("Piece: ", self.piece)
+
 
         lines_cleared = 0
-        deepest_line_cleared = 0
         for j in range(len(piece_board[0])):
             depth_count = 0
             for i in range(len(piece_board)):
                 if piece_board[i][j] == '-1':
                     depth_count += 1
-                    deepest_line_cleared = max(deepest_line_cleared, i)
             lines_cleared = max(lines_cleared, depth_count)
 
-        possible_pos = []
-
-        for i in range(4):
-            for j in range(-2, 8):
-                for r in range(len(pieces[self.piece])):
-                    pos_v = []
-                    for e in pieces[self.piece][r]:
-                        k = e // 4
-                        l = e % 4
-
-                        line_index = deepest_line_cleared -3+i +k
-                        column_index = j+l
-
-                        if line_index < rows and column_index < cols and self.board[line_index][column_index] == '0':
-                            pos_v.append([line_index, column_index, r])
-
-                    if (len(pos_v) == 4):
-                        shift_down = -1
-                        end = False
-
-                        while not end:
-                            shift_down += 1
-
-                            for e in pieces[self.piece][r]:
-                                k = e // 4
-                                l = e % 4
-
-                                line_index = deepest_line_cleared -3+i +k +shift_down+1
-                                column_index = j +l
-
-                                if not (line_index < rows and column_index < cols and self.board[line_index][column_index] == '0'):
-                                    end = True
-
-                            possible_pos.append((deepest_line_cleared-3+i+shift_down, j, r))
-        for pos in possible_pos:
+        for pos in tetris_parser.get_possible_actions(self.convert_to_int(self.board), self.piece):
             if self.simulate_and_check(pos, new_board):
                 return pos, lines_cleared
         print("something is wrong....")
-        print(possible_pos)
-        self.print_board(self.board)
-        self.print_board(new_board)
-        self.print_board(piece_board)
+        print(self.board)
+        print(new_board)
+        print("Piece: ", self.piece)
         return None, None
 
-
-
-
-
-
 x = game()
-
 x.generate_player_db(n_games, number_of_plays)
-
-#print(piecev_to_matrix(0,0))
