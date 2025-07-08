@@ -43,25 +43,26 @@ def get_afterstate(original_board, piece, action):
     return board, lines
 
 def get_possible_actions(board, piece):
+    #print(board, piece)
     actions = []
-    for x in range(-2, len(board)):
-        for y in range(-2, len(board[x])):
+    for y in range(-2, len(board)):
+        for x in range(-2, len(board[0])):
             for rot in range(len(definitions.pieces[piece])):
                 is_floating = True
                 is_invalid = False
                 for block in definitions.pieces[piece][rot]:
                     i = block//4
                     j = block%4
-                    if (x+i >= len(board)) or (y+j < 0) or (y+j >= len(board[x])):
+                    if (y+i >= len(board)) or (x+j < 0) or (x+j >= len(board[0])):
                         is_invalid = True
                         break
-                    if (x+i) >= 0 and board[x+i][y+j] == 1:
+                    if (y+i) >= 0 and board[y+i][x+j] == 1:
                         is_invalid = True
                         break
-                    if x+i+1 >= 0 and ((x+i+1 >= len(board)) or (board[x+i+1][y+j] == 1)):
+                    if y+i+1 >= 0 and ((y+i+1 >= len(board)) or (board[y+i+1][x+j] == 1)):
                         is_floating = False
                 if not is_invalid and not is_floating:
-                    actions.append([x, y, rot])
+                    actions.append([y, x, rot])
     return actions
 
 
@@ -194,11 +195,10 @@ if __name__ == '__main__':
 
     filename = sys.argv[1]
     f = open(filename, "rb")
-    plays = pickle.load(f)
-    #play = random.choice(plays)
+    games = pickle.load(f)
+    game = random.choice(games)
 
-    for play in plays: 
-
+    for play in game: 
         print_board(play["board"])
         print("Piece: ", definitions.piece_vector[play["piece"]])
         print("Next Piece: ", definitions.piece_vector[play["next_piece"]])
@@ -208,11 +208,11 @@ if __name__ == '__main__':
         new_board = get_afterstate(play["board"], play["piece"], play["action"])[0]
         print_board(new_board)
 
-        print(get_route(play["board"], play["piece"], play["action"][0], play["action"][1], play["action"][2], []))
+        print(get_route(play["board"], play["piece"], play["action"][0], play["action"][1], play["action"][2], [], []))
 
-    #possible_actions = get_possible_actions(play["board"], play["piece"])
+        possible_actions = get_possible_actions(play["board"], play["piece"])
 
-    #print(possible_actions)
+        print(possible_actions)
     #for a in possible_actions:
     #    print_board(get_afterstate(play["board"], play["piece"], a)[0])
 
@@ -234,6 +234,9 @@ if __name__ == '__main__':
     #print(encodings)
     #print(len(encodings[0][0]))
 
+    board = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 0, 0, 0, 0], [0, 0, 0, 1, 1, 1, 1, 0, 0, 0], [1, 0, 0, 1, 1, 1, 1, 0, 0, 0], [1, 1, 0, 1, 1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], [1, 1, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 0, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]]
+    piece = 1 
+    best_action = [2, 7, 0]
 
-
-
+    print_board(board)
+    print(get_route(board, piece, best_action[0], best_action[1], best_action[2], [], []))

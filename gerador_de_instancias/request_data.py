@@ -171,6 +171,12 @@ class game:
                 })
                 self.update_game(nxt_board)
                 i = i+1
+
+                if ('1' in nxt_board[0]) or ('1' in nxt_board[1]):
+                    lost = True
+                    game_data[-1]['gameover'] = True
+                    break
+
             self.history.append(game_data)
             if n % 10 == 10-1:
                 self.save_player_data()

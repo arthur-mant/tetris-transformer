@@ -5,6 +5,7 @@ import graphs
 import numpy as np
 from torch import nn
 from torch import optim
+import torch
 
 #############
 #DEBUG TOOL
@@ -79,35 +80,40 @@ class qlearning():
         return reward+self.gamma*(max_next_state_value)
 
     def training_loop(self, episode):
-        if len(self.dataset_manager) > self.batch_size:
-            return
         #state, action, reward, next_state
         batch = self.dataset_manager.sample(self.batch_size)
-
+        if batch == None:
+            return
         q = []
         target_q = []
 
         with torch.no_grad():
             for s, a, r, ns in batch:
-                q.append(self.player.model(tetris_parser.encode_state(s[0], s[1], s[2], a)))
+                q.append(self.player.model(tetris_parser.encode_state(s[0], s[1], s[2], a)).item())
                 if ns == None:
                     target_q.append(r)
                 else:
                     target_q.append(self.calculate_target_q(r, ns))
-        loss = self.loss_f(torch.Tensor(q), torch.Tensor(target_q))
 
         self.optimizer.zero_grad()
+        
+        loss = self.loss_f(torch.Tensor(q), torch.Tensor(target_q))
+        loss.requires_grad = True
+
         loss.backward()
 
-        torch.nn.utils.clip_grad_value_(self.player.model.parameters(), 10)
+        #torch.nn.utils.clip_grad_value_(self.player.model.parameters(), 10)
         self.optimizer.step()
         if episode >= 0:
             self.acc_loss[episode] += loss.item()
 
     def main_loop(self):
         print("training on db")
-        for _ in range(10*self.epochs*(len(self.dataset_manager)//(self.batch_size))):
+        #print(len(self.dataset_manager))
+        for _ in range(self.epochs*(len(self.dataset_manager)//(self.batch_size))):
+            #print(i)
             self.training_loop(-1)
+        self.player.update_stable_model()
         for i in range(self.n_episodes):
             self.dataset_manager.gen_train_db(
                 self.gen_games_db()
@@ -121,8 +127,8 @@ class qlearning():
             print("Episode: ", i, " Loss: ", self.acc_loss[i], " Mean Score: ", self.mean_score[i], " Max Score: ", self.max_score[i])
 
             if i>0 and i % 10 == 0:
-                self.player.save_model("episode"+str(i)+".h5")
-                self.player.save_model("most_recent.h5")
+                self.player.save_model("saved_nns/episode"+str(i)+".h5")
+                self.player.save_model("saved_nns/most_recent.h5")
                 graphs.plot_mean_score(self.mean_score)
                 graphs.plot_max_score(self.max_score)
                 graphs.plot_accumulated_loss(self.acc_loss)

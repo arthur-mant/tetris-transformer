@@ -6,8 +6,10 @@ import torch
 from copy import deepcopy
 
 class player():
-    def __init__(self, model, epsilon, epsilon_decay):
+    def __init__(self, model, epsilon, epsilon_decay, load_from_file):
         self.model = model
+        if load_from_file:
+            torch.load("saved_nns/most_recent.h5")
         self.stable_model = deepcopy(model)
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
@@ -29,9 +31,12 @@ class player():
         while len(actions) > 0:
             idx_best_action = np.argmax(afterstate_values) 
             best_action = actions[idx_best_action]
+            #print("board: ", board)
+            #print("piece: ", piece)
+            #print("best_action: ", best_action)
             route = tetris_parser.get_route(board, piece, best_action[0], best_action[1], best_action[2], [], [])
             if route != None:
-                return best_action, route, afterstate_values[idx_best_action]
+                return best_action, route, afterstate_values[idx_best_action][0]
             #print("removed unviable action: ", best_action)
             idx = actions.index(best_action)
             del actions[idx]
