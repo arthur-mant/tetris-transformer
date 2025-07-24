@@ -200,13 +200,16 @@ if __name__ == '__main__':
 
     for play in game: 
         print_board(play["board"])
-        print("Piece: ", definitions.piece_vector[play["piece"]])
-        print("Next Piece: ", definitions.piece_vector[play["next_piece"]])
+        print(play["board"])
+        print("Piece: ", definitions.piece_vector[play["piece"]], play["piece"])
+        print("Next Piece: ", definitions.piece_vector[play["next_piece"]], play["next_piece"])
         print("Action: ", play["action"])
         print("Lines Cleared: ", play["lines_cleared"])
 
         new_board = get_afterstate(play["board"], play["piece"], play["action"])[0]
         print_board(new_board)
+
+        print(new_board)
 
         print(get_route(play["board"], play["piece"], play["action"][0], play["action"][1], play["action"][2], [], []))
 
@@ -234,9 +237,9 @@ if __name__ == '__main__':
     #print(encodings)
     #print(len(encodings[0][0]))
 
-    board = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 0, 0, 0, 0], [0, 0, 0, 1, 1, 1, 1, 0, 0, 0], [1, 0, 0, 1, 1, 1, 1, 0, 0, 0], [1, 1, 0, 1, 1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], [1, 1, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 0, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]]
-    piece = 1 
-    best_action = [2, 7, 0]
+    #board = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 0, 0, 0, 0], [0, 0, 0, 1, 1, 1, 1, 0, 0, 0], [1, 0, 0, 1, 1, 1, 1, 0, 0, 0], [1, 1, 0, 1, 1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], [1, 1, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 0, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]]
+    #piece = 1 
+    #best_action = [2, 7, 0]
 
-    print_board(board)
-    print(get_route(board, piece, best_action[0], best_action[1], best_action[2], [], []))
+    #print_board(board)
+    #print(get_route(board, piece, best_action[0], best_action[1], best_action[2], [], []))

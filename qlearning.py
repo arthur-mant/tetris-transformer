@@ -6,6 +6,7 @@ import numpy as np
 from torch import nn
 from torch import optim
 import torch
+import time
 
 #############
 #DEBUG TOOL
@@ -39,6 +40,8 @@ class qlearning():
         self.mean_score = []
         self.max_score = []
         self.acc_loss = [0]*n_episodes
+        self.total_training_time = 0
+        self.total_gen_time = 0
 
     def gen_games_db(self):
         games_db = []
@@ -107,6 +110,8 @@ class qlearning():
         if episode >= 0:
             self.acc_loss[episode] += loss.item()
 
+
+
     def main_loop(self):
         print("training on db")
         #print(len(self.dataset_manager))
@@ -115,16 +120,30 @@ class qlearning():
             self.training_loop(-1)
         self.player.update_stable_model()
         for i in range(self.n_episodes):
+            t = time.time()
             self.dataset_manager.gen_train_db(
                 self.gen_games_db()
             )
+            t = time.time() - t
+            self.total_gen_time += t
+            print("took ", t, " s to generate games this episode")
+            print("average time is ", self.total_gen_time/(i+1))
+
             print("starting training, episode ", i)
+            t = time.time()
+
             for _ in range(self.epochs*(len(self.dataset_manager)//(self.batch_size))):
                 self.training_loop(i)
+
             self.player.update_stable_model()
             self.player.update_epsilon()
 
             print("Episode: ", i, " Loss: ", self.acc_loss[i], " Mean Score: ", self.mean_score[i], " Max Score: ", self.max_score[i])
+
+            t = time.time() - t
+            self.total_training_time += t
+            print("took ", t, " s to train this episode")
+            print("average time is ", self.total_training_time/(i+1))
 
             if i>0 and i % 10 == 0:
                 self.player.save_model("saved_nns/episode"+str(i)+".h5")

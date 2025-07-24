@@ -15,8 +15,6 @@ class MLP(nn.Module):
             nn.ReLU(),
             nn.Linear(120, 120),
             nn.ReLU(),
-            nn.Linear(120, 120),
-            nn.ReLU(),
             nn.Linear(120, 1),
         )
     def forward(self, x):

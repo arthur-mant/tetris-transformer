@@ -35,6 +35,7 @@ class dataset_manager():
                         game[i]["action"][0],
                         game[i]["gameover"]
                         )                
+
                 if game[i]['gameover']:
                     next_state = None
                 else:
