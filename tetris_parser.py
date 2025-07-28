@@ -88,15 +88,38 @@ def encode_state(board, piece, next_piece, action):
             cumsum += elem*multiplier
             multiplier *= 2
         state.append(cumsum)
-    return torch.tensor(state, dtype=torch.float, requires_grad=False)#, lines
+    return torch.tensor(state, dtype=torch.float, requires_grad=False), lines
 
-def get_all_afterstates_encodings(board, piece, next_piece):
-    afterstate_encodings = []
+def no_encode_state(board, piece, next_piece, action):
+    afterstate, lines = get_afterstate(board, piece, action)
+    state = [next_piece]
+    for aux in afterstate:
+        state += aux
+    return torch.tensor(state, dtype=torch.float, requires_grad=False), lines
+
+def generate_afterstate(board, piece, next_piece, action, use_encoding):
+    if use_encoding:
+        afterstate, lines = encode_state(board, piece, next_piece, action) 
+    else:
+        afterstate, lines = no_encode_state(board, piece, next_piece, action)
+    gameover = False
+    for i in range(0, 2):
+        for j in range(3, 7):
+            if afterstate[i*definitions.n_cols+j] == 1:
+                gameover = True
+    return afterstate, lines, gameover
+
+def get_all_afterstates(board, piece, next_piece, use_encoding):
+    afterstates = []
+    compleated_lines = []
+    gameovers = []
     actions = get_possible_actions(board, piece)
     for action in actions:
-        afterstate_encodings.append(encode_state(board, piece, next_piece, action))
-    
-    return actions, torch.stack(afterstate_encodings)
+        afterstate, lines, gameover = generate_afterstate(board, piece, next_piece, action, use_encoding)
+        afterstates.append(afterstate)
+        compleated_lines.append(lines)
+        gameovers.append(gameover)
+    return actions, torch.stack(afterstates), compleated_lines, gameovers
 
 def intersect(board, piece, y, x, rot):
     for block in definitions.pieces[piece][rot]:

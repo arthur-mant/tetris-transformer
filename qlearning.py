@@ -26,7 +26,7 @@ def print_board(board):
 
 
 class qlearning():
-    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, gamma, epochs, batch_size, lr):
+    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, gamma, epochs, batch_size, lr, name, use_encoding):
         self.player = player
         self.n_episodes = n_episodes
         self.n_games = n_games      #per episode
@@ -35,6 +35,7 @@ class qlearning():
         self.gamma = gamma          #future reward discount
         self.epochs = epochs
         self.batch_size = batch_size
+        self.use_encoding = use_encoding
         self.loss_f = nn.SmoothL1Loss()
         self.optimizer = optim.AdamW(self.player.model.parameters(), lr=lr) 
         self.mean_score = []
@@ -42,6 +43,9 @@ class qlearning():
         self.acc_loss = [0]*n_episodes
         self.total_training_time = 0
         self.total_gen_time = 0
+        self.name = name
+
+
 
     def gen_games_db(self):
         games_db = []
@@ -92,15 +96,20 @@ class qlearning():
 
         with torch.no_grad():
             for s, a, r, ns in batch:
-                q.append(self.player.model(tetris_parser.encode_state(s[0], s[1], s[2], a)).item())
+                afterstate, lines, gameover = tetris_parser.generate_afterstate(s[0], s[1], s[2], a, self.use_encoding) 
+                q.append(self.player.model(afterstate).item())
                 if ns == None:
                     target_q.append(r)
                 else:
                     target_q.append(self.calculate_target_q(r, ns))
 
         self.optimizer.zero_grad()
-        
-        loss = self.loss_f(torch.Tensor(q), torch.Tensor(target_q))
+        q = torch.tensor(q, dtype=torch.float)
+        target_q = torch.tensor(target_q, dtype=torch.float)
+        #print("Q:\n", q)
+        #print("target_Q: \n", target_q)
+
+        loss = self.loss_f(q, target_q)
         loss.requires_grad = True
 
         loss.backward()
@@ -146,8 +155,8 @@ class qlearning():
             print("average time is ", self.total_training_time/(i+1))
 
             if i>0 and i % 10 == 0:
-                self.player.save_model("saved_nns/episode"+str(i)+".h5")
-                self.player.save_model("saved_nns/most_recent.h5")
+                self.player.save_model(self.name+"episode"+str(i)+".h5")
+                self.player.save_model(self.name+"most_recent.h5")
                 graphs.plot_mean_score(self.mean_score)
                 graphs.plot_max_score(self.max_score)
                 graphs.plot_accumulated_loss(self.acc_loss)

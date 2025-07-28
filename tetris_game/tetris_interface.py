@@ -103,7 +103,7 @@ class Tetris:
         if lines > 0:
             self.score += line_score[lines-1]
             self.lines += lines
-            print(lines, " cleared!!!!!!!!!!!!")
+            #print(lines, " cleared!!!!!!!!!!!!")
         return lines
 
     #retorna is_illegal, lines_cleared

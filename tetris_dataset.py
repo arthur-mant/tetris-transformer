@@ -1,4 +1,3 @@
-import rewards
 import tetris_parser
 import random
 from collections import deque
@@ -6,8 +5,8 @@ from collections import deque
 
 class dataset_manager():
 
-    def __init__(self, reward_function, penalty_function, db_size):
-        self.rewards_object = rewards.Rewards(reward_function, penalty_function)
+    def __init__(self, rewards_object, db_size):
+        self.rewards_object = rewards_object
         self.db = deque(maxlen=db_size)
 
     def __len__(self):

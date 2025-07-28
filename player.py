@@ -6,13 +6,15 @@ import torch
 from copy import deepcopy
 
 class player():
-    def __init__(self, model, epsilon, epsilon_decay, load_from_file):
+    def __init__(self, model, epsilon, epsilon_decay, load_from_file, use_encoding, rewards_object):
         self.model = model
         if load_from_file:
             torch.load("saved_nns/most_recent.h5")
         self.stable_model = deepcopy(model)
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
+        self.use_encoding = use_encoding
+        self.rewards_object = rewards_object
 
     def update_stable_model(self):
        self.stable_model.load_state_dict(self.model.state_dict()) 
@@ -25,9 +27,19 @@ class player():
         torch.save(self.model.state_dict(), path)
 
     def best_action(self, board, piece, next_piece, model):
-        actions, afterstate_encodings = tetris_parser.get_all_afterstates_encodings(board, piece, next_piece)
-        afterstate_values = list(model(afterstate_encodings).detach().numpy())
-        
+        actions, afterstates, lines, gameover = tetris_parser.get_all_afterstates(board, piece, next_piece, self.use_encoding)
+        afterstate_values = list(model(afterstates).detach().numpy())
+
+        for i in range(len(actions)):
+            afterstate_values[i] += self.rewards_object.total_reward(
+                    lines[i],
+                    actions[i][0],
+                    gameover[i]
+                    )
+        #print(afterstates)
+        #print(afterstate_values)
+
+
         while len(actions) > 0:
             idx_best_action = np.argmax(afterstate_values) 
             best_action = actions[idx_best_action]
