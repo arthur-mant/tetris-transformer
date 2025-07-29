@@ -36,7 +36,7 @@ n_episodes = 1000
 lr = 0.0001
 epochs = 1
 
-name = "saved_nns/"+"lr"+str(lr)+"epochs"+str(epochs)+"use_encoding"+str(use_encoding)
+name = "saved_nns/"+"lr"+str(lr)+"_epochs"+str(epochs)+"_use_encoding"+str(use_encoding)+"_"
 
 ql = qlearning.qlearning(
         player = player.player(
@@ -59,4 +59,4 @@ ql = qlearning.qlearning(
         name = name,
         use_encoding = use_encoding
     )
-ql.main_loop()
+ql.main_loop(not load_from_file)

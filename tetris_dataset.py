@@ -25,21 +25,17 @@ class dataset_manager():
         for game in game_db:
             for i in range(len(game)):
                 #se não perdeu mas acabou o episodio (chego no max de jogadas)
-                if i == len(game)-1 and not game[i]['gameover']:
+                if i == len(game)-1:
                     break
                 state = (game[i]["board"], game[i]["piece"], game[i]["next_piece"])
                 action = game[i]["action"]
-                rew = self.rewards_object.total_reward(
-                        game[i]["lines_cleared"],
-                        game[i]["action"][0],
-                        game[i]["gameover"]
+                next_rew = self.rewards_object.total_reward(
+                        game[i+1]["lines_cleared"],
+                        game[i+1]["action"][0],
+                        game[i+1]["gameover"]
                         )                
-
-                if game[i]['gameover']:
-                    next_state = None
-                else:
-                    next_state = (game[i+1]["board"], game[i+1]["piece"], game[i+1]["next_piece"])
-                self.db.append((state, action, rew, next_state))
+                next_state = (game[i+1]["board"], game[i+1]["piece"], game[i+1]["next_piece"])
+                self.db.append((state, action, next_rew, next_state))
 
         self.shuffled_idx = list(range(len(self.db)))
         random.shuffle(self.shuffled_idx)

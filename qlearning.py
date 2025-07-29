@@ -44,7 +44,7 @@ class qlearning():
         self.total_training_time = 0
         self.total_gen_time = 0
         self.name = name
-        self.lines_cleared = 4*[n_episodes*[0]]
+        self.lines_cleared = [n_episodes*[0] for i in range(4)]
 
 
 
@@ -75,8 +75,8 @@ class qlearning():
                     'lines_cleared': lines_cleared,
                     'gameover': game.gameover
                 })
-            if lines_cleared > 0:
-                self.lines_cleared[lines_cleared-1][episode] += 1
+                if lines_cleared > 0:
+                    self.lines_cleared[lines_cleared-1][episode] += 1
             #print("game ", i, " score: ", game.score)
             scores.append(game.score)
             games_db.append(game_history)
@@ -85,9 +85,9 @@ class qlearning():
         self.max_score.append(np.max(scores))
         return games_db
 
-    def calculate_target_q(self, reward, next_state):
+    def calculate_target_q(self, next_reward, next_state):
         _, _, max_next_state_value = self.player.best_action(next_state[0], next_state[1], next_state[2], self.player.stable_model)
-        return reward+self.gamma*(max_next_state_value)
+        return self.gamma*(next_reward + max_next_state_value)
 
     def training_loop(self, episode):
         #state, action, reward, next_state
@@ -98,13 +98,10 @@ class qlearning():
         target_q = []
 
         with torch.no_grad():
-            for s, a, r, ns in batch:
+            for s, a, nr, ns in batch:
                 afterstate, lines, gameover = tetris_parser.generate_afterstate(s[0], s[1], s[2], a, self.use_encoding) 
                 q.append(self.player.model(afterstate).item())
-                if ns == None:
-                    target_q.append(r)
-                else:
-                    target_q.append(self.calculate_target_q(r, ns))
+                target_q.append(self.calculate_target_q(nr, ns))
 
         self.optimizer.zero_grad()
         q = torch.tensor(q, dtype=torch.float)
@@ -124,13 +121,14 @@ class qlearning():
 
 
 
-    def main_loop(self):
-        print("training on db")
-        #print(len(self.dataset_manager))
-        for _ in range(self.epochs*(len(self.dataset_manager)//(self.batch_size))):
-            #print(i)
-            self.training_loop(-1)
-        self.player.update_stable_model()
+    def main_loop(self, initial_training):
+
+        if initial_training:
+            print("training on db")
+            for _ in range(self.epochs*(len(self.dataset_manager)//(self.batch_size))):
+                self.training_loop(-1)
+            self.player.update_stable_model()
+
         for i in range(self.n_episodes):
             print("---------------------------------------------------")
             print("Episode ", i)
@@ -142,7 +140,6 @@ class qlearning():
             self.total_gen_time += t
             print("Generating games took ", t, "s this episode, average time is ", self.total_gen_time/(i+1), "s")
 
-            #print("starting training, episode ", i)
             t = time.time()
 
             for _ in range(self.epochs*(len(self.dataset_manager)//(self.batch_size))):
@@ -162,7 +159,8 @@ class qlearning():
             if i>0 and i % 10 == 0:
                 self.player.save_model(self.name+"episode"+str(i)+".h5")
                 self.player.save_model(self.name+"most_recent.h5")
-                graphs.plot_mean_score(self.mean_score, i)
-                graphs.plot_max_score(self.max_score, i)
-                graphs.plot_accumulated_loss(self.acc_loss, i)
-                graphs.plot_lines_cleared(self.lines_cleared, i)
+                graph_name = self.name.split('/')[1]
+                graphs.plot_mean_score(self.mean_score, i, graph_name)
+                graphs.plot_max_score(self.max_score, i, graph_name)
+                graphs.plot_accumulated_loss(self.acc_loss, i, graph_name)
+                graphs.plot_lines_cleared(self.lines_cleared, i, graph_name)
