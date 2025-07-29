@@ -45,7 +45,8 @@ ql = qlearning.qlearning(
             epsilon_decay = (init_epsilon - 0.01)/n_episodes,
             load_from_file = load_from_file,
             use_encoding = use_encoding,
-            rewards_object = rewards_object
+            rewards_object = rewards_object,
+            name = name
         ),
         n_episodes = n_episodes,
         n_games = 100,

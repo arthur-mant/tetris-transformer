@@ -40,14 +40,15 @@ class qlearning():
         self.optimizer = optim.AdamW(self.player.model.parameters(), lr=lr) 
         self.mean_score = []
         self.max_score = []
-        self.acc_loss = [0]*n_episodes
+        self.acc_loss = n_episodes*[0]
         self.total_training_time = 0
         self.total_gen_time = 0
         self.name = name
+        self.lines_cleared = 4*[n_episodes*[0]]
 
 
 
-    def gen_games_db(self):
+    def gen_games_db(self, episode):
         games_db = []
         scores = []
         for i in range(self.n_games):
@@ -74,7 +75,9 @@ class qlearning():
                     'lines_cleared': lines_cleared,
                     'gameover': game.gameover
                 })
-            print("game ", i, " score: ", game.score)
+            if lines_cleared > 0:
+                self.lines_cleared[lines_cleared-1][episode] += 1
+            #print("game ", i, " score: ", game.score)
             scores.append(game.score)
             games_db.append(game_history)
             
@@ -131,7 +134,7 @@ class qlearning():
         for i in range(self.n_episodes):
             t = time.time()
             self.dataset_manager.gen_train_db(
-                self.gen_games_db()
+                self.gen_games_db(i)
             )
             t = time.time() - t
             self.total_gen_time += t
@@ -157,6 +160,7 @@ class qlearning():
             if i>0 and i % 10 == 0:
                 self.player.save_model(self.name+"episode"+str(i)+".h5")
                 self.player.save_model(self.name+"most_recent.h5")
-                graphs.plot_mean_score(self.mean_score)
-                graphs.plot_max_score(self.max_score)
-                graphs.plot_accumulated_loss(self.acc_loss)
+                graphs.plot_mean_score(self.mean_score, i)
+                graphs.plot_max_score(self.max_score, i)
+                graphs.plot_accumulated_loss(self.acc_loss, i)
+                graphs.plot_lines_cleared(self.lines_cleared. i)

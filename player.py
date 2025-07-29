@@ -6,10 +6,10 @@ import torch
 from copy import deepcopy
 
 class player():
-    def __init__(self, model, epsilon, epsilon_decay, load_from_file, use_encoding, rewards_object):
+    def __init__(self, model, epsilon, epsilon_decay, load_from_file, use_encoding, rewards_object, name):
         self.model = model
         if load_from_file:
-            torch.load("saved_nns/most_recent.h5")
+            torch.load(name+"most_recent.h5")
         self.stable_model = deepcopy(model)
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
