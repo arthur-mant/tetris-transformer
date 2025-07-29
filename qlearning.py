@@ -97,6 +97,7 @@ class qlearning():
         q = []
         target_q = []
 
+        #gargalo aqui
         with torch.no_grad():
             for s, a, nr, ns in batch:
                 afterstate, lines, gameover = tetris_parser.generate_afterstate(s[0], s[1], s[2], a, self.use_encoding) 
@@ -124,7 +125,7 @@ class qlearning():
     def main_loop(self, initial_training):
 
         if initial_training:
-            print("training on db")
+            print("training on games from file")
             for _ in range(self.epochs*(len(self.dataset_manager)//(self.batch_size))):
                 self.training_loop(-1)
             self.player.update_stable_model()
