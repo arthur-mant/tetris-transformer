@@ -63,8 +63,8 @@ class Tetris:
             i = block//4
             j = block%4
             if i+self.piece.y == -1 or i+self.piece.y == -2:
-                break
-            if  i+self.piece.y < -2 or \
+                pass
+            elif i+self.piece.y < -2 or \
                 i+self.piece.y > definitions.n_rows-1 or \
                 j+self.piece.x > definitions.n_cols-1 or \
                 j+self.piece.x < 0 or \
@@ -142,6 +142,9 @@ class Tetris:
                 self.piece.rotate()
             if self.intersects():
                 print("TRIED FOLLOWING ROUTE BUT SOMETHING WENT WRONG WHEN", elem)
+                print(route)
+                print(self.piece.type)
+                print(self.field)
         return self.freeze()
 
     def translate_board(self, board):

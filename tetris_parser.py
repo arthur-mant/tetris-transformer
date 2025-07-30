@@ -127,9 +127,9 @@ def intersect(board, piece, y, x, rot):
         j = block%4
         if y <-2:
             return True
-        if y+i < 0:
-            break
-        if x+j < 0 or y+i >= definitions.n_rows or x+j >= definitions.n_cols or board[y+i][x+j] == 1:
+        elif y+i < 0:
+            pass
+        elif x+j < 0 or y+i >= definitions.n_rows or x+j >= definitions.n_cols or board[y+i][x+j] == 1:
             return True
     return False
 
