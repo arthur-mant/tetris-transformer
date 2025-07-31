@@ -32,8 +32,8 @@ db_manager = tetris_dataset.dataset_manager(rewards_object, 10000)
 db_manager.gen_train_db(games_data)
 
 init_epsilon = 0.1
-n_episodes = 1000
-lr = 0.001
+n_episodes = 10000
+lr = 0.0001
 epochs = 1
 
 name = "saved_nns/"+"lr"+str(lr)+"_epochs"+str(epochs)+"_use_encoding"+str(use_encoding)+"_"

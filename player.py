@@ -36,9 +36,6 @@ class player():
                     actions[i][0],
                     gameover[i]
                     )
-        #print(afterstates)
-        #print(afterstate_values)
-
 
         while len(actions) > 0:
             idx_best_action = np.argmax(afterstate_values) 

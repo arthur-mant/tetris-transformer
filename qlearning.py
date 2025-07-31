@@ -126,7 +126,7 @@ class qlearning():
 
         if initial_training:
             print("training on games from file")
-            for _ in range(self.epochs*(len(self.dataset_manager)//(self.batch_size))):
+            for _ in range(10*self.epochs*(len(self.dataset_manager)//(self.batch_size))):
                 self.training_loop(-1)
             self.player.update_stable_model()
 
