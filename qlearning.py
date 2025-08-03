@@ -7,6 +7,7 @@ from torch import nn
 from torch import optim
 import torch
 import time
+import pickle
 
 #############
 #DEBUG TOOL
@@ -45,7 +46,7 @@ class qlearning():
         self.total_gen_time = 0
         self.name = name
         self.lines_cleared = [n_episodes*[0] for i in range(4)]
-
+        self.best_game = (0, None)
 
 
     def gen_games_db(self, episode):
@@ -80,6 +81,8 @@ class qlearning():
             #print("game ", i, " score: ", game.score)
             scores.append(game.score)
             games_db.append(game_history)
+            if game.score > self.best_game[0]:
+                self.best_game = (game.score, game_history)
             
         self.mean_score.append(np.mean(scores))
         self.max_score.append(np.max(scores))
@@ -126,7 +129,7 @@ class qlearning():
 
         if initial_training:
             print("training on games from file")
-            for _ in range(10*self.epochs*(len(self.dataset_manager)//(self.batch_size))):
+            for _ in range(self.epochs*(len(self.dataset_manager)//(self.batch_size))):
                 self.training_loop(-1)
             self.player.update_stable_model()
 
@@ -158,6 +161,7 @@ class qlearning():
             print("Training took ", t, "s this episode, average time is ", self.total_training_time/(i+1), "s")
 
             if i>0 and i % 10 == 0:
+                print("saving data, plotting graphs...")
                 self.player.save_model(self.name+"episode"+str(i)+".h5")
                 self.player.save_model(self.name+"most_recent.h5")
                 graph_name = self.name.split('/')[1]
@@ -165,3 +169,8 @@ class qlearning():
                 graphs.plot_max_score(self.max_score, i, graph_name)
                 graphs.plot_accumulated_loss(self.acc_loss, i, graph_name)
                 graphs.plot_lines_cleared(self.lines_cleared, i, graph_name)
+                #saving best game
+                fileObj = open("best_games/"+graph_name[:-1]+".pkl", 'wb')
+                pickle.dump(self.best_game[1], fileObj)
+                fileObj.close()
+

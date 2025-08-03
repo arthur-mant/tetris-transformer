@@ -60,3 +60,4 @@ ql = qlearning.qlearning(
         use_encoding = use_encoding
     )
 ql.main_loop(not load_from_file)
+#ql.main_loop(False)
