@@ -90,26 +90,20 @@ class qlearning():
 
     def calculate_target_q(self, next_reward, next_state):
         _, _, max_next_state_value = self.player.best_action(next_state[0], next_state[1], next_state[2], self.player.stable_model)
+        #print(max_next_state_value)
         return self.gamma*(next_reward + max_next_state_value)
 
     def training_loop(self, episode):
-        #state, action, reward, next_state
-        batch = self.dataset_manager.sample(self.batch_size)
-        if batch == None:
-            return
-        q = []
-        target_q = []
+        q, target_q = self.dataset_manager.sample(self.batch_size)
 
         #gargalo aqui
-        with torch.no_grad():
-            for s, a, nr, ns in batch:
-                afterstate, lines, gameover = tetris_parser.generate_afterstate(s[0], s[1], s[2], a, self.use_encoding) 
-                q.append(self.player.model(afterstate).item())
-                target_q.append(self.calculate_target_q(nr, ns))
+        #with torch.no_grad():
+        #    for s, a, nr, ns in batch:
+        #        afterstate, lines, gameover = tetris_parser.generate_afterstate(s[0], s[1], s[2], a, self.use_encoding) 
+        #        q.append(self.player.model(afterstate).item())
+        #        target_q.append(self.calculate_target_q(nr, ns))
 
         self.optimizer.zero_grad()
-        q = torch.tensor(q, dtype=torch.float)
-        target_q = torch.tensor(target_q, dtype=torch.float)
 
         loss = self.loss_f(q, target_q)
         loss.requires_grad = True
@@ -127,6 +121,7 @@ class qlearning():
 
         if initial_training:
             print("training on games from file")
+            self.dataset_manager.gen_train_db(self.player.model, self.calculate_target_q, self.use_encoding)
             for _ in range(10*self.epochs*(len(self.dataset_manager)//(self.batch_size))):
                 self.training_loop(-1)
             self.player.update_stable_model()
@@ -135,7 +130,7 @@ class qlearning():
             print("---------------------------------------------------")
             print("Episode ", i)
             t = time.time()
-            self.dataset_manager.gen_train_db(
+            self.dataset_manager.gen_game_db(
                 self.gen_games_db(i)
             )
             t = time.time() - t
@@ -144,13 +139,15 @@ class qlearning():
 
             t = time.time()
 
-            for _ in range(self.epochs*(len(self.dataset_manager)//(self.batch_size))):
+            self.dataset_manager.gen_train_db(self.player.model, self.calculate_target_q, self.use_encoding)
+            for _ in range(self.epochs*(len(self.dataset_manager.q)//(self.batch_size))):
                 self.training_loop(i)
 
             self.player.update_stable_model()
             self.player.update_epsilon()
 
-            print("Loss: ", self.acc_loss[i])
+            self.acc_loss[i] = self.acc_loss[i]/self.epochs
+            print("Loss por época (média): ", self.acc_loss[i])
             print("Mean Score: ", self.mean_score[i])
             print("Max Score: ", self.max_score[i])
 

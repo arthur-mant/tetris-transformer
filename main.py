@@ -29,12 +29,12 @@ rewards_object = rewards.Rewards(reward_function, penalty_function)
 
 #mexer no tamannho
 db_manager = tetris_dataset.dataset_manager(rewards_object, 10000)
-db_manager.gen_train_db(games_data)
+db_manager.gen_game_db(games_data)
 
-init_epsilon = 0.001
+init_epsilon = 0.05
 n_episodes = 10000
-lr = 0.01
-epochs = 2
+lr = 0.001
+epochs = 100
 
 name = "saved_nns/"+"lr"+str(lr)+"_epochs"+str(epochs)+"_use_encoding"+str(use_encoding)+"_"
 
