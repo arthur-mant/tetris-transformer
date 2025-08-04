@@ -31,10 +31,10 @@ rewards_object = rewards.Rewards(reward_function, penalty_function)
 db_manager = tetris_dataset.dataset_manager(rewards_object, 10000)
 db_manager.gen_train_db(games_data)
 
-init_epsilon = 0.1
+init_epsilon = 0.001
 n_episodes = 10000
-lr = 0.0001
-epochs = 1
+lr = 0.01
+epochs = 2
 
 name = "saved_nns/"+"lr"+str(lr)+"_epochs"+str(epochs)+"_use_encoding"+str(use_encoding)+"_"
 
@@ -42,7 +42,7 @@ ql = qlearning.qlearning(
         player = player.player(
             model = mlp.MLP(use_encoding),
             epsilon = init_epsilon,
-            epsilon_decay = (init_epsilon - 0.01)/n_episodes,
+            epsilon_decay = (init_epsilon - 0.001)/n_episodes,
             load_from_file = load_from_file,
             use_encoding = use_encoding,
             rewards_object = rewards_object,
