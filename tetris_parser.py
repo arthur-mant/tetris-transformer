@@ -1,7 +1,6 @@
 from tetris_game import definitions
-from copy import deepcopy
 import torch
-
+import time
 
 def print_board(board):
     for i in range(len(board)):
@@ -21,7 +20,13 @@ def print_board(board):
     print(aux)
 
 def get_afterstate(original_board, piece, action):
-    board = deepcopy(original_board)
+    #board = deepcopy(original_board)
+    board = []
+    for i in original_board:
+        aux = []
+        for j in i:
+            aux.append(j)
+        board.append(aux)
     for block in definitions.pieces[piece][action[2]]:
         i = block//4
         j = block%4
@@ -239,6 +244,7 @@ if __name__ == '__main__':
         possible_actions = get_possible_actions(play["board"], play["piece"])
 
         print(possible_actions)
+        print(get_all_afterstates(play["board"], play["piece"], play["next_piece"], False))
     #for a in possible_actions:
     #    print_board(get_afterstate(play["board"], play["piece"], a)[0])
 

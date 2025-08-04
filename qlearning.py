@@ -110,8 +110,6 @@ class qlearning():
         self.optimizer.zero_grad()
         q = torch.tensor(q, dtype=torch.float)
         target_q = torch.tensor(target_q, dtype=torch.float)
-        #print("Q:\n", q)
-        #print("target_Q: \n", target_q)
 
         loss = self.loss_f(q, target_q)
         loss.requires_grad = True
