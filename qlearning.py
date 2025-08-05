@@ -94,12 +94,15 @@ class qlearning():
         return self.gamma*(next_reward + max_next_state_value)
 
     def training_loop(self, episode):
-        q, target_q = self.dataset_manager.sample(self.batch_size)
+        afterstates, target_q = self.dataset_manager.sample(self.batch_size)
 
         self.optimizer.zero_grad()
 
-        loss = self.loss_f(q, target_q)
-        loss.requires_grad = True
+        outputs = self.player.model(afterstates)
+        target_q = torch.reshape(target_q, (128, 1))
+
+        loss = self.loss_f(outputs, target_q)
+        #loss.requires_grad = True
 
         loss.backward()
 
@@ -124,7 +127,7 @@ class qlearning():
             print("Episode ", i)
 
             
-            print(self.player.model(torch.tensor([0 for _ in range(201)], dtype=torch.float)).item())
+            print("saida exemplo pra 201*[0]: ", self.player.model(torch.tensor([0 for _ in range(201)], dtype=torch.float)).item())
 
             t = time.time()
             self.dataset_manager.gen_game_db(
@@ -137,7 +140,7 @@ class qlearning():
             t = time.time()
 
             self.dataset_manager.gen_train_db(self.player.model, self.calculate_target_q, self.use_encoding)
-            for _ in range(self.epochs*(len(self.dataset_manager.q)//(self.batch_size))):
+            for _ in range(self.epochs*(len(self.dataset_manager.target_q)//(self.batch_size))):
                 self.training_loop(i)
 
             self.player.update_stable_model()

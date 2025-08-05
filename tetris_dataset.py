@@ -15,16 +15,16 @@ class dataset_manager():
     def __getitem(self, idx):
         return self.db[idx]
     def sample(self, batch_size):
-        q_out = []
+        afterstates_out = []
         target_q_out = []
         for _ in range(batch_size):
             idx = self.shuffled_idx[self.iterator]
-            q_out.append(idx)
+            afterstates_out.append(self.afterstates[self.shuffled_idx[self.iterator]])
             target_q_out.append(self.target_q[self.shuffled_idx[self.iterator]])
             self.iterator += 1
-            if self.iterator == len(self.q):
+            if self.iterator == len(self.target_q):
                 self.shuffle()
-        return torch.tensor(q_out, dtype=torch.float), torch.tensor(target_q_out, dtype=torch.float)
+        return torch.stack(afterstates_out), torch.stack(target_q_out)
 
     def gen_game_db(self, game_db):
 
@@ -44,17 +44,13 @@ class dataset_manager():
                 self.db.append((state, action, next_rew, next_state))
 
     def gen_train_db(self, model, calculate_target_q, use_encoding):
-        self.q = []
+        self.afterstates = []
         self.target_q = []
         with torch.no_grad():
             for s, a, nr, ns in self.db:
                 afterstate, lines, gameover = tetris_parser.generate_afterstate(s[0], s[1], s[2], a, use_encoding) 
-                self.q.append(model(afterstate).item())
-                self.target_q.append(calculate_target_q(nr, ns))
-                #if self.target_q[-1] > 30:
-                #    print(s, a, nr, ns, self.q[-1], self.target_q[-1])
-        #print("q: ", self.q[:100])
-        #print("target_q: ", self.target_q[:100])
+                self.afterstates.append(afterstate) #model(afterstate).item())
+                self.target_q.append(torch.tensor(calculate_target_q(nr, ns), dtype=torch.float))
         self.shuffle()
 
     def shuffle(self):
