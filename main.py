@@ -33,7 +33,7 @@ db_manager.gen_game_db(games_data)
 
 init_epsilon = 0.05
 n_episodes = 10000
-lr = 0.001
+lr = 0.01
 epochs = 100
 
 name = "saved_nns/"+"lr"+str(lr)+"_epochs"+str(epochs)+"_use_encoding"+str(use_encoding)+"_"

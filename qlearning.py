@@ -96,13 +96,6 @@ class qlearning():
     def training_loop(self, episode):
         q, target_q = self.dataset_manager.sample(self.batch_size)
 
-        #gargalo aqui
-        #with torch.no_grad():
-        #    for s, a, nr, ns in batch:
-        #        afterstate, lines, gameover = tetris_parser.generate_afterstate(s[0], s[1], s[2], a, self.use_encoding) 
-        #        q.append(self.player.model(afterstate).item())
-        #        target_q.append(self.calculate_target_q(nr, ns))
-
         self.optimizer.zero_grad()
 
         loss = self.loss_f(q, target_q)
@@ -129,6 +122,10 @@ class qlearning():
         for i in range(self.n_episodes):
             print("---------------------------------------------------")
             print("Episode ", i)
+
+            
+            print(self.player.model(torch.tensor([0 for _ in range(201)], dtype=torch.float)).item())
+
             t = time.time()
             self.dataset_manager.gen_game_db(
                 self.gen_games_db(i)
