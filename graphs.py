@@ -5,8 +5,8 @@ def plot_mean_score(mean_scores, episode, name):
 
     y = mean_scores[:episode+1]
     x = [i for i in range(len(y))]
-    plt.plot(x, y, '.')
-    plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 1))(np.unique(x)))
+    plt.plot(x, y)
+    #plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 1))(np.unique(x)))
     #plt.plot(mean_scores[:episode+1] )
     plt.title("Pontuação média por episódio de treinamento")
     plt.xlabel("Episódio")
@@ -18,8 +18,8 @@ def plot_max_score(max_scores, episode, name):
 
     y = max_scores[:episode+1]
     x = [i for i in range(len(y))]
-    plt.plot(x, y, '.')
-    plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 1))(np.unique(x)))
+    plt.plot(x, y)
+    #plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 1))(np.unique(x)))
     #plt.plot(max_scores[:episode+1])
     plt.title("Pontuação máxima atingida em cada episódio de treinamento")
     plt.xlabel("Episódio")
@@ -30,8 +30,8 @@ def plot_max_score(max_scores, episode, name):
 def plot_accumulated_loss(loss, episode, name):
     y = loss[:episode+1]
     x = [i for i in range(len(y))]
-    plt.plot(x, y, '.')
-    plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 1))(np.unique(x)))
+    plt.plot(x, y)
+    #plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 1))(np.unique(x)))
     #plt.plot(loss[:episode+1])
     plt.title("Loss acumulada por episódio de treinamento")
     plt.xlabel("Episódio")

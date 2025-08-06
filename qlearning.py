@@ -106,7 +106,8 @@ class qlearning():
 
         loss.backward()
 
-        #torch.nn.utils.clip_grad_value_(self.player.model.parameters(), 10)
+        torch.nn.utils.clip_grad_norm_(self.player.model.parameters(), max_norm = 1.0, norm_type=2)
+
         self.optimizer.step()
         if episode >= 0:
             self.acc_loss[episode] += loss.item()
@@ -127,7 +128,10 @@ class qlearning():
             print("Episode ", i)
 
             
-            print("saida exemplo pra 201*[0]: ", self.player.model(torch.tensor([0 for _ in range(201)], dtype=torch.float)).item())
+            #print("saida exemplo pra 201*[0]: ", self.player.model(torch.tensor([0 for _ in range(201)], dtype=torch.float)).item())
+
+            print("saida exemplo pra 197*[0]+4*[1]: ", self.player.model(torch.tensor(197*[0]+4*[1], dtype=torch.float)).item())
+
 
             t = time.time()
             self.dataset_manager.gen_game_db(
