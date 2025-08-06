@@ -37,7 +37,7 @@ lr = 0.00001
 epochs = 10
 update_interval = 5
 
-name = "saved_nns/"+"lr"+str(lr)+"_epochs"+str(epochs)+"update_interval"+str(update_interval)+"_use_encoding"+str(use_encoding)+"_"
+name = "saved_nns/"+"lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_use_encoding"+str(use_encoding)+"_rew"+reward_function+"_pen"+penalty_function+"_"
 
 ql = qlearning.qlearning(
         player = player.player(

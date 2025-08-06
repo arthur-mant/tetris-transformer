@@ -25,6 +25,13 @@ class Piece:
 
     def rotate(self):
         self.rotation = (self.rotation+1) % len(pieces[self.type])
+    def go_down(self):
+        if self.y+1 < definitions.n_rows:
+            self.y += 1
+
+    def go_side(self, dx):
+        if self.x+dx >= -2 and self.x+dx < definitions.n_cols:
+            self.x += dx
 
 class Tetris:
     score = 0
