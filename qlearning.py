@@ -27,7 +27,7 @@ def print_board(board):
 
 
 class qlearning():
-    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, gamma, epochs, batch_size, lr, name, use_encoding):
+    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, gamma, epochs, batch_size, lr, name, use_encoding, update_interval):
         self.player = player
         self.n_episodes = n_episodes
         self.n_games = n_games      #per episode
@@ -47,6 +47,7 @@ class qlearning():
         self.name = name
         self.lines_cleared = [n_episodes*[0] for i in range(4)]
         self.best_game = (0, None)
+        self.update_interval = update_interval
 
 
     def gen_games_db(self, episode):
@@ -102,7 +103,6 @@ class qlearning():
         target_q = torch.reshape(target_q, (128, 1))
 
         loss = self.loss_f(outputs, target_q)
-        #loss.requires_grad = True
 
         loss.backward()
 
@@ -147,7 +147,9 @@ class qlearning():
             for _ in range(self.epochs*(len(self.dataset_manager.target_q)//(self.batch_size))):
                 self.training_loop(i)
 
-            self.player.update_stable_model()
+            if i>0 and i % self.update_interval == 0:
+                print("updating stable network!")
+                self.player.update_stable_model()
             self.player.update_epsilon()
 
             self.acc_loss[i] = self.acc_loss[i]/self.epochs

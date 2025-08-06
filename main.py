@@ -35,8 +35,9 @@ init_epsilon = 0.05
 n_episodes = 10000
 lr = 0.00001
 epochs = 10
+update_interval = 5
 
-name = "saved_nns/"+"lr"+str(lr)+"_epochs"+str(epochs)+"_use_encoding"+str(use_encoding)+"_"
+name = "saved_nns/"+"lr"+str(lr)+"_epochs"+str(epochs)+"update_interval"+str(update_interval)+"_use_encoding"+str(use_encoding)+"_"
 
 ql = qlearning.qlearning(
         player = player.player(
@@ -57,7 +58,7 @@ ql = qlearning.qlearning(
         batch_size = 128,
         lr = lr,
         name = name,
-        use_encoding = use_encoding
+        use_encoding = use_encoding,
+        update_interval = update_interval
     )
 ql.main_loop(not load_from_file)
-#ql.main_loop(False)
