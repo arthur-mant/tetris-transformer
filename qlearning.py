@@ -27,7 +27,7 @@ def print_board(board):
 
 
 class qlearning():
-    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, gamma, epochs, batch_size, lr, name, use_encoding, update_interval):
+    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, gamma, epochs, batch_size, lr, name, use_encoding, update_interval, rewards_object):
         self.player = player
         self.n_episodes = n_episodes
         self.n_games = n_games      #per episode
@@ -48,6 +48,7 @@ class qlearning():
         self.lines_cleared = [n_episodes*[0] for i in range(4)]
         self.best_game = (0, None)
         self.update_interval = update_interval
+        self.rewards_object = rewards_object
 
 
     def gen_games_db(self, episode):
@@ -92,7 +93,10 @@ class qlearning():
     def calculate_target_q(self, next_reward, next_state):
         _, _, max_next_state_value = self.player.best_action(next_state[0], next_state[1], next_state[2], self.player.stable_model)
         #print(max_next_state_value)
-        return self.gamma*(next_reward + max_next_state_value)
+        #mudar para self.rew_object(4)
+        #if self.gamma*(next_reward/16 + max_next_state_value)/2 > 1:
+        #    print(next_reward, max_next_state_value)
+        return self.gamma*(next_reward/self.rewards_object.rew(4) + max_next_state_value)/2
 
     def training_loop(self, episode):
         afterstates, target_q = self.dataset_manager.sample(self.batch_size)
@@ -101,6 +105,11 @@ class qlearning():
 
         outputs = self.player.model(afterstates)
         target_q = torch.reshape(target_q, (128, 1))
+
+        #print(outputs, target_q)
+        #for i in target_q:
+        #    if i[0] > 1:
+        #        print("target_q value is greater than 1: ", i[0])
 
         loss = self.loss_f(outputs, target_q)
 
@@ -174,4 +183,6 @@ class qlearning():
                 fileObj = open("best_games/"+graph_name[:-1]+".pkl", 'wb')
                 pickle.dump(self.best_game[1], fileObj)
                 fileObj.close()
+
+                print("saved at ", graph_name[:-1])
 

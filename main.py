@@ -33,8 +33,8 @@ db_manager.gen_game_db(games_data)
 
 init_epsilon = 0.05
 n_episodes = 10000
-lr = 0.00001
-epochs = 10
+lr = 0.0001
+epochs = 100
 update_interval = 5
 
 name = "saved_nns/"+"lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_use_encoding"+str(use_encoding)+"_rew"+reward_function+"_pen"+penalty_function+"_"
@@ -43,7 +43,7 @@ ql = qlearning.qlearning(
         player = player.player(
             model = mlp.MLP(use_encoding),
             epsilon = init_epsilon,
-            epsilon_decay = (init_epsilon - 0.001)/n_episodes,
+            epsilon_decay = (init_epsilon - 0.000)/n_episodes,
             load_from_file = load_from_file,
             use_encoding = use_encoding,
             rewards_object = rewards_object,
@@ -59,6 +59,9 @@ ql = qlearning.qlearning(
         lr = lr,
         name = name,
         use_encoding = use_encoding,
-        update_interval = update_interval
+        update_interval = update_interval,
+        rewards_object = rewards_object
     )
-ql.main_loop(not load_from_file)
+#ql.main_loop(not load_from_file)
+ql.main_loop(False)
+

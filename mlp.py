@@ -13,13 +13,12 @@ class MLP(nn.Module):
             layer_size = 201
         super().__init__()
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(layer_size, layer_size),
+            nn.Linear(layer_size, 100),
             nn.ReLU(),
-            nn.Linear(layer_size, layer_size),
+            nn.Linear(100, 100),
             nn.ReLU(),
-            nn.Linear(layer_size, layer_size),
-            nn.ReLU(),
-            nn.Linear(layer_size, 1),
+            nn.Linear(100, 1),
+            nn.Tanh()
         )
     def forward(self, x):
         logits = self.linear_relu_stack(x)
