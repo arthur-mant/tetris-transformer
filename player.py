@@ -6,13 +6,14 @@ import torch
 from copy import deepcopy
 
 class player():
-    def __init__(self, model, epsilon, epsilon_decay, load_from_file, use_encoding, rewards_object, name):
+    def __init__(self, model, init_epsilon, min_epsilon, load_from_file, use_encoding, rewards_object, name):
         self.model = model
         if load_from_file:
-            torch.load(name+"most_recent.h5")
+            torch.load("saved_nns/"+name+"_most_recent.h5")
         self.stable_model = deepcopy(model)
-        self.epsilon = epsilon
-        self.epsilon_decay = epsilon_decay
+        self.init_epsilon = init_epsilon
+        self.epsilon = init_epsilon
+        self.min_epsilon = min_epsilon
         self.use_encoding = use_encoding
         self.rewards_object = rewards_object
 
@@ -20,10 +21,13 @@ class player():
        self.stable_model.load_state_dict(self.model.state_dict()) 
 
     def update_epsilon(self):
-        if self.epsilon > self.epsilon_decay:
-            self.epsilon -= self.epsilon_decay
+        if self.epsilon > self.min_epsilon:
+            self.epsilon -= (self.init_epsilon-self.min_epsilon)/1000
+        else:
+            self.epsilon = self.min_epsilon
 
-    def save_model(self, path):
+    def save_model(self, name):
+        path = "saved_nns/"+name
         torch.save(self.model.state_dict(), path)
 
     def best_action(self, board, piece, next_piece, model):

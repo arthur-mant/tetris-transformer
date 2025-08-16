@@ -11,7 +11,7 @@ def plot_mean_score(mean_scores, episode, name):
     plt.title("Pontuação média por episódio de treinamento")
     plt.xlabel("Episódio")
     plt.ylabel("Pontuação Média")
-    plt.savefig("graphs/"+name+"mean_score.png")
+    plt.savefig("graphs/"+name+"_mean_score.png")
     plt.close()
 
 def plot_max_score(max_scores, episode, name):
@@ -24,7 +24,7 @@ def plot_max_score(max_scores, episode, name):
     plt.title("Pontuação máxima atingida em cada episódio de treinamento")
     plt.xlabel("Episódio")
     plt.ylabel("Pontuação Máxima")
-    plt.savefig("graphs/"+name+"max_score.png")
+    plt.savefig("graphs/"+name+"_max_score.png")
     plt.close()
 
 def plot_accumulated_loss(loss, episode, name):
@@ -36,7 +36,7 @@ def plot_accumulated_loss(loss, episode, name):
     plt.title("Loss acumulada por episódio de treinamento")
     plt.xlabel("Episódio")
     plt.ylabel("Perda acumulada")
-    plt.savefig("graphs/"+name+"loss.png")
+    plt.savefig("graphs/"+name+"_loss.png")
     plt.close()
 
 def plot_lines_cleared(lines_cleared, episode, name):
@@ -46,6 +46,6 @@ def plot_lines_cleared(lines_cleared, episode, name):
     plt.xlabel("Episódio")
     plt.ylabel("Quantidade")
     plt.legend()
-    plt.savefig("graphs/"+name+"line_completion.png")
+    plt.savefig("graphs/"+name+"_line_completion.png")
     plt.close()
 

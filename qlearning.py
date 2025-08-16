@@ -172,17 +172,29 @@ class qlearning():
 
             if i>0 and i % 10 == 0:
                 print("saving data, plotting graphs...")
-                self.player.save_model(self.name+"episode"+str(i)+".h5")
-                self.player.save_model(self.name+"most_recent.h5")
-                graph_name = self.name.split('/')[1]
-                graphs.plot_mean_score(self.mean_score, i, graph_name)
-                graphs.plot_max_score(self.max_score, i, graph_name)
-                graphs.plot_accumulated_loss(self.acc_loss, i, graph_name)
-                graphs.plot_lines_cleared(self.lines_cleared, i, graph_name)
+                self.player.save_model(self.name+"_episode"+str(i)+".h5")
+                self.player.save_model(self.name+"_most_recent.h5")
+                graphs.plot_mean_score(self.mean_score, i, self.name)
+                graphs.plot_max_score(self.max_score, i, self.name)
+                graphs.plot_accumulated_loss(self.acc_loss, i, self.name)
+                graphs.plot_lines_cleared(self.lines_cleared, i, self.name)
                 #saving best game
-                fileObj = open("best_games/"+graph_name[:-1]+".pkl", 'wb')
+                fileObj = open("logs/"+self.name+"_mean_score.pkl", 'wb')
+                pickle.dump(self.mean_score, fileObj)
+                fileObj.close()
+                fileObj = open("logs/"+self.name+"_max_score.pkl", 'wb')
+                pickle.dump(self.max_score, fileObj)
+                fileObj.close()
+                fileObj = open("logs/"+self.name+"_loss.pkl", 'wb')
+                pickle.dump(self.acc_loss, fileObj)
+                fileObj.close()
+                fileObj = open("logs/"+self.name+"_lines_cleared.pkl", 'wb')
+                pickle.dump(self.lines_cleared, fileObj)
+                fileObj.close()
+
+                fileObj = open("best_games/"+self.name+"_best_game.pkl", 'wb')
                 pickle.dump(self.best_game[1], fileObj)
                 fileObj.close()
 
-                print("saved at ", graph_name[:-1])
+                print("saved as ", self.name)
 
