@@ -23,6 +23,5 @@ for action in actions:
     board = tetris_game.translate_board(tetris_game.field)
     route = tetris_parser.get_route(board, tetris_game.piece.type, action[0], action[1], action[2], [], [])
     game_exec.run_game(route)
-    tetris_game.freeze()
 
 time.sleep(10)

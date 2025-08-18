@@ -17,6 +17,8 @@ class MLP(nn.Module):
             nn.ReLU(),
             nn.Linear(100, 100),
             nn.ReLU(),
+            nn.Linear(100, 100),
+            nn.ReLU(),
             nn.Linear(100, 1),
             nn.Tanh()
         )

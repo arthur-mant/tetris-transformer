@@ -104,9 +104,11 @@ class Tetris:
                     holes += 1
             if holes == 0:
                 lines += 1
-                for k in range(i, 1, -1):
+                for k in range(i, 0, -1):
                     for l in range(definitions.n_cols):
                         self.field[k][l] = self.field[k-1][l]
+                for l in range(definitions.n_cols):
+                    self.field[0][l] = -1
         if lines > 0:
             self.score += line_score[lines-1]
             self.lines += lines
