@@ -136,10 +136,7 @@ class qlearning():
             print("---------------------------------------------------")
             print("Episode ", i)
 
-            
-            #print("saida exemplo pra 201*[0]: ", self.player.model(torch.tensor([0 for _ in range(201)], dtype=torch.float)).item())
-
-            print("saida exemplo pra 197*[0]+4*[1]: ", self.player.model(torch.tensor(197*[0]+4*[1], dtype=torch.float)).item())
+            #print("saida exemplo pra 197*[0]+4*[1]: ", self.player.model(torch.tensor(197*[0]+4*[1], dtype=torch.float)).item())
 
 
             t = time.time()

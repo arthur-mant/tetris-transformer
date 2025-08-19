@@ -71,28 +71,18 @@ def get_possible_actions(board, piece):
     return actions
 
 
-def slice_board(board):
-    slices = []
-    for i in range(len(board)-3):
-        for j in range(len(board[i])-3):
-            aux = []
-            for k in range(4):
-                for l in range(4):
-                    aux.append(board[i+k][j+l])
-            slices.append(aux)
-    return slices
-
 def encode_state(board, piece, next_piece, action):
     afterstate, lines = get_afterstate(board, piece, action)
-    slices = slice_board(afterstate)
     state = [next_piece]
-    for sl in slices:
-        multiplier = 1
-        cumsum = 0
-        for elem in sl:
-            cumsum += elem*multiplier
-            multiplier *= 2
-        state.append(cumsum)
+    for i in range(len(board)-3):
+        for j in range(len(board[i])-3):
+            multiplier = 1
+            cumsum = 0
+            for k in range(4):
+                for l in range(4):
+                    cumsum += board[i+k][j+l]*multiplier
+                    multiplier *= 2
+            state.append(cumsum)
     return torch.tensor(state, dtype=torch.float, requires_grad=False), lines
 
 def no_encode_state(board, piece, next_piece, action):
@@ -226,49 +216,18 @@ if __name__ == '__main__':
     games = pickle.load(f)
     game = random.choice(games)
 
-    for play in game: 
+    for play in game:
+        print("---------------------------------------------------")
         print_board(play["board"])
-        print(play["board"])
-        print("Piece: ", definitions.piece_vector[play["piece"]], play["piece"])
-        print("Next Piece: ", definitions.piece_vector[play["next_piece"]], play["next_piece"])
+        print("Piece: ", definitions.piece_vector[play["piece"]])
+        print("Next Piece: ", definitions.piece_vector[play["next_piece"]])
         print("Action: ", play["action"])
         print("Lines Cleared: ", play["lines_cleared"])
 
         new_board = get_afterstate(play["board"], play["piece"], play["action"])[0]
         print_board(new_board)
 
-        print(new_board)
-
         print(get_route(play["board"], play["piece"], play["action"][0], play["action"][1], play["action"][2], [], []))
 
-        possible_actions = get_possible_actions(play["board"], play["piece"])
-
-        print(possible_actions)
-        print(get_all_afterstates(play["board"], play["piece"], play["next_piece"], False))
-    #for a in possible_actions:
-    #    print_board(get_afterstate(play["board"], play["piece"], a)[0])
-
-    #slices = slice_board(new_board)
-    #encodes = encode_state(play["board"], play["piece"], play["next_piece"], play["action"])
-    #print("encode[0]: ", encodes[0][0])
-
-    #for s in range(len(slices)):
-    #    print("\n", s//7, s%7, encodes[0][1+s])
-    #    for i in range(4):
-    #        cum_str = ""
-    #        for j in range(4):
-    #            cum_str += str(slices[s][4*i+j])
-    #        print(cum_str)
-        
-
-
-    #encodings = get_all_afterstates_encodings(play["board"], play["piece"], play["next_piece"])
-    #print(encodings)
-    #print(len(encodings[0][0]))
-
-    #board = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 0, 0, 0, 0], [0, 0, 0, 1, 1, 1, 1, 0, 0, 0], [1, 0, 0, 1, 1, 1, 1, 0, 0, 0], [1, 1, 0, 1, 1, 1, 1, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], [1, 1, 0, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 0, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 0, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]]
-    #piece = 1 
-    #best_action = [2, 7, 0]
-
-    #print_board(board)
-    #print(get_route(board, piece, best_action[0], best_action[1], best_action[2], [], []))
+        enc_state = encode_state(play["board"], play["piece"], play["next_piece"], play["action"])
+        print(enc_state)
