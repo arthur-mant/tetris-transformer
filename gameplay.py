@@ -31,7 +31,7 @@ model.load_state_dict(torch.load(nn_file, weights_only=True))
 
 rewards_object = rewards.Rewards(reward_function, penalty_function)
 
-p1 = player.player(model, 0, 0, False, use_encoding, rewards_object, nn_name)
+p1 = player.player(model, 0, 0, False, use_encoding, rewards_object, nn_name, 0.99)
 
 #jogando os jogos
 

@@ -47,20 +47,19 @@ ql = qlearning.qlearning(
             load_from_file = load_from_file,
             use_encoding = use_encoding,
             rewards_object = rewards_object,
-            name = name
+            name = name,
+            gamma = 0.99,
         ),
         n_episodes = n_episodes,
         n_games = 100,
         max_plays = 100,
         dataset_manager = db_manager,
-        gamma = 0.99,
         epochs = epochs,
         batch_size = 128,
         lr = lr,
         name = name,
         use_encoding = use_encoding,
-        update_interval = update_interval,
-        rewards_object = rewards_object
+        update_interval = update_interval
     )
 #ql.main_loop(not load_from_file)
 ql.main_loop(False)

@@ -6,7 +6,7 @@ import torch
 from copy import deepcopy
 
 class player():
-    def __init__(self, model, init_epsilon, min_epsilon, load_from_file, use_encoding, rewards_object, name):
+    def __init__(self, model, init_epsilon, min_epsilon, load_from_file, use_encoding, rewards_object, name, gamma):
         self.model = model
         if load_from_file:
             torch.load("saved_nns/"+name+"_most_recent.h5")
@@ -16,6 +16,7 @@ class player():
         self.min_epsilon = min_epsilon
         self.use_encoding = use_encoding
         self.rewards_object = rewards_object
+        self.gamma = gamma          #future reward discount
 
     def update_stable_model(self):
        self.stable_model.load_state_dict(self.model.state_dict()) 
@@ -35,22 +36,17 @@ class player():
         afterstate_values = list(model(afterstates).detach().numpy())
 
         for i in range(len(actions)):
-            afterstate_values[i] = (afterstate_values[i]+self.rewards_object.total_reward(lines[i], actions[i][0], gameover[i])/self.rewards_object.rew(4))/2
+            afterstate_values[i] = (self.rewards_object.total_reward(lines[i], actions[i][0], gameover[i])+self.gamma*afterstate_values[i])/2
 
         while len(actions) > 0:
             idx_best_action = np.argmax(afterstate_values) 
             best_action = actions[idx_best_action]
-            #print("board: ", board)
-            #print("piece: ", piece)
-            #print("best_action: ", best_action)
             route = tetris_parser.get_route(board, piece, best_action[0], best_action[1], best_action[2], [], [])
             if route != None:
                 return best_action, route, afterstate_values[idx_best_action][0]
-            #print("removed unviable action: ", best_action)
             idx = actions.index(best_action)
             del actions[idx]
             del afterstate_values[idx]
-            #print("actions left: ", actions)
 
     def random_action(self, board, piece):
         possible_actions = tetris_parser.get_possible_actions(board, piece)
@@ -59,7 +55,6 @@ class player():
             route = tetris_parser.get_route(board, piece, play[0], play[1], play[2], [], [])
             if route != None:
                 return play, route
-            #print("removed unviable action")
             possible_actions.remove(play)
 
 

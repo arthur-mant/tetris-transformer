@@ -82,7 +82,7 @@ def encode_state(board, piece, next_piece, action):
                 for l in range(4):
                     cumsum += board[i+k][j+l]*multiplier
                     multiplier *= 2
-            state.append(cumsum)
+            state.append(cumsum/(2**16))
     return torch.tensor(state, dtype=torch.float, requires_grad=False), lines
 
 def no_encode_state(board, piece, next_piece, action):

@@ -9,31 +9,13 @@ import torch
 import time
 import pickle
 
-#############
-#DEBUG TOOL
-
-def print_board(board):
-    for i in range(len(board)):
-        aux = "|"
-        for elem in board[i]:
-            aux += "{:>2}".format(elem)
-        print("{:>2}".format(i),aux, "|")
-    aux = ""
-    for _ in range(len(board[0])+2):
-        aux += "-"
-    print(aux)
-
-##############
-
-
 class qlearning():
-    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, gamma, epochs, batch_size, lr, name, use_encoding, update_interval, rewards_object):
+    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, epochs, batch_size, lr, name, use_encoding, update_interval):
         self.player = player
         self.n_episodes = n_episodes
         self.n_games = n_games      #per episode
         self.max_plays = max_plays  #per game
         self.dataset_manager = dataset_manager
-        self.gamma = gamma          #future reward discount
         self.epochs = epochs
         self.batch_size = batch_size
         self.use_encoding = use_encoding
@@ -48,7 +30,6 @@ class qlearning():
         self.lines_cleared = [n_episodes*[0] for i in range(4)]
         self.best_game = (0, None)
         self.update_interval = update_interval
-        self.rewards_object = rewards_object
 
 
     def gen_games_db(self, episode):
@@ -63,11 +44,6 @@ class qlearning():
                     break
                 board, piece, next_piece = game.get_state()
                 action, route = self.player.act(board, piece, next_piece)
-                
-                #print("piece: ", definitions.piece_vector[piece])
-                #print("route: ", route)
-                #print_board(board)
-
 
                 lines_cleared = game.play_route(route)
                 game_history.append({
@@ -80,7 +56,6 @@ class qlearning():
                 })
                 if lines_cleared > 0:
                     self.lines_cleared[lines_cleared-1][episode] += 1
-            #print("game ", i, " score: ", game.score)
             scores.append(game.score)
             games_db.append(game_history)
             if game.score > self.best_game[0]:
@@ -92,11 +67,7 @@ class qlearning():
 
     def calculate_target_q(self, next_reward, next_state):
         _, _, max_next_state_value = self.player.best_action(next_state[0], next_state[1], next_state[2], self.player.stable_model)
-        #print(max_next_state_value)
-        #mudar para self.rew_object(4)
-        #if self.gamma*(next_reward/16 + max_next_state_value)/2 > 1:
-        #    print(next_reward, max_next_state_value)
-        return self.gamma*(next_reward/self.rewards_object.rew(4) + max_next_state_value)/2
+        return (next_reward + max_next_state_value)/2
 
     def training_loop(self, episode):
         afterstates, target_q = self.dataset_manager.sample(self.batch_size)
@@ -105,11 +76,6 @@ class qlearning():
 
         outputs = self.player.model(afterstates)
         target_q = torch.reshape(target_q, (128, 1))
-
-        #print(outputs, target_q)
-        #for i in target_q:
-        #    if i[0] > 1:
-        #        print("target_q value is greater than 1: ", i[0])
 
         loss = self.loss_f(outputs, target_q)
 
@@ -136,7 +102,7 @@ class qlearning():
             print("---------------------------------------------------")
             print("Episode ", i)
 
-            #print("saida exemplo pra 197*[0]+4*[1]: ", self.player.model(torch.tensor(197*[0]+4*[1], dtype=torch.float)).item())
+            print("saida exemplo pra 197*[0]+4*[1]: ", self.player.model(torch.tensor(197*[0]+4*[1], dtype=torch.float)).item())
 
 
             t = time.time()
