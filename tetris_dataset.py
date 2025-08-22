@@ -8,7 +8,7 @@ class dataset_manager():
     def __init__(self, rewards_object, db_size):
         self.rewards_object = rewards_object
         self.db = deque(maxlen=db_size)
-        self.shuffled_idx = list(range(db_size))
+        self.shuffled_idx = []
 
     def __len__(self):
         return len(self.db)
@@ -51,6 +51,8 @@ class dataset_manager():
                 afterstate, lines, gameover = tetris_parser.generate_afterstate(s[0], s[1], s[2], a, use_encoding) 
                 self.afterstates.append(afterstate) #model(afterstate).item())
                 self.target_q.append(torch.tensor(calculate_target_q(nr, ns), dtype=torch.float))
+        if len(self.shuffled_idx) != len(self.target_q):
+            self.shuffled_idx = list(range(len(self.target_q)))
         self.shuffle()
 
     def shuffle(self):

@@ -18,9 +18,9 @@ if use_encoding:
 else:
     print("not using encoding")
 
-filename = sys.argv[-1]
-f = open(filename, "rb")
-games_data = pickle.load(f)
+#filename = sys.argv[-1]
+#f = open(filename, "rb")
+#games_data = pickle.load(f)
 
 reward_function = 'q'
 penalty_function = 'q'
@@ -29,7 +29,7 @@ rewards_object = rewards.Rewards(reward_function, penalty_function)
 
 #mexer no tamannho
 db_manager = tetris_dataset.dataset_manager(rewards_object, 10000)
-db_manager.gen_game_db(games_data)
+#db_manager.gen_game_db(games_data)
 
 init_epsilon = 0.05
 n_episodes = 10000

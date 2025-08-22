@@ -36,7 +36,7 @@ class player():
         afterstate_values = list(model(afterstates).detach().numpy())
 
         for i in range(len(actions)):
-            afterstate_values[i] = (self.rewards_object.total_reward(lines[i], actions[i][0], gameover[i])+self.gamma*afterstate_values[i])/2
+            afterstate_values[i] = self.rewards_object.total_reward(lines[i], actions[i][0], gameover[i])+self.gamma*afterstate_values[i]
 
         while len(actions) > 0:
             idx_best_action = np.argmax(afterstate_values) 

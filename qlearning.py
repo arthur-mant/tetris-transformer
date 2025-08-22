@@ -67,7 +67,7 @@ class qlearning():
 
     def calculate_target_q(self, next_reward, next_state):
         _, _, max_next_state_value = self.player.best_action(next_state[0], next_state[1], next_state[2], self.player.stable_model)
-        return (next_reward + max_next_state_value)/2
+        return next_reward + max_next_state_value
 
     def training_loop(self, episode):
         afterstates, target_q = self.dataset_manager.sample(self.batch_size)
