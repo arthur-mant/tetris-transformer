@@ -33,7 +33,8 @@ class player():
 
     def best_action(self, board, piece, next_piece):
         actions, afterstates, lines, gameover = tetris_parser.get_all_afterstates(board, piece, next_piece, self.use_encoding)
-        afterstate_values = list(self.model(afterstates).detach().numpy())
+        with torch.no_grad():
+            afterstate_values = list(self.model(afterstates).detach().numpy())
 
         for i in range(len(actions)):
             afterstate_values[i] = self.rewards_object.total_reward(lines[i], actions[i][0], gameover[i])+self.gamma*afterstate_values[i]

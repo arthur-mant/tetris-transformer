@@ -53,8 +53,6 @@ class qlearning():
                     'piece': piece,
                     'next_piece': next_piece,
                     'action': action,
-                    'lines_cleared': lines_cleared,
-                    'gameover': game.gameover
                 })
                 if lines_cleared > 0:
                     self.lines_cleared[lines_cleared-1][episode] += 1
@@ -67,10 +65,11 @@ class qlearning():
         self.max_score.append(np.max(scores))
         return games_db
 
-    def calculate_target_q(self, next_reward, next_state):
+    def calculate_target_q(self, next_state):
         action, _ = self.player.best_action(next_state[0], next_state[1], next_state[2])
         afterstate, lines, gameover = tetris_parser.generate_afterstate(next_state[0], next_state[1], next_state[2], action, self.use_encoding)
-        return self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate).detach().numpy()
+        with torch.no_grad():
+            return self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate).detach().numpy()
 
     def training_loop(self, episode):
         afterstates, target_q = self.dataset_manager.sample(self.batch_size)
