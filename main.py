@@ -35,7 +35,8 @@ init_epsilon = 0.05
 n_episodes = 10000
 lr = 0.00001
 epochs = 100
-update_interval = 3
+update_interval = 5
+gamma = 0.95
 
 name = "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_use_encoding"+str(use_encoding)+"_rew"+reward_function+"_pen"+penalty_function
 
@@ -48,7 +49,7 @@ ql = qlearning.qlearning(
             use_encoding = use_encoding,
             rewards_object = rewards_object,
             name = name,
-            gamma = 0.99,
+            gamma = gamma,
         ),
         n_episodes = n_episodes,
         n_games = 100,
@@ -59,7 +60,9 @@ ql = qlearning.qlearning(
         lr = lr,
         name = name,
         use_encoding = use_encoding,
-        update_interval = update_interval
+        update_interval = update_interval,
+        gamma = gamma,
+        rewards_object = rewards_object
     )
 #ql.main_loop(not load_from_file)
 ql.main_loop(False)

@@ -31,9 +31,9 @@ class player():
         path = "saved_nns/"+name
         torch.save(self.model.state_dict(), path)
 
-    def best_action(self, board, piece, next_piece, model):
+    def best_action(self, board, piece, next_piece):
         actions, afterstates, lines, gameover = tetris_parser.get_all_afterstates(board, piece, next_piece, self.use_encoding)
-        afterstate_values = list(model(afterstates).detach().numpy())
+        afterstate_values = list(self.model(afterstates).detach().numpy())
 
         for i in range(len(actions)):
             afterstate_values[i] = self.rewards_object.total_reward(lines[i], actions[i][0], gameover[i])+self.gamma*afterstate_values[i]
@@ -43,7 +43,7 @@ class player():
             best_action = actions[idx_best_action]
             route = tetris_parser.get_route(board, piece, best_action[0], best_action[1], best_action[2], [], [])
             if route != None:
-                return best_action, route, afterstate_values[idx_best_action][0]
+                return best_action, route
             idx = actions.index(best_action)
             del actions[idx]
             del afterstate_values[idx]
@@ -62,7 +62,6 @@ class player():
         if random.random() < self.epsilon:
             return self.random_action(board, piece)
         else:
-            action, route, _ = self.best_action(board, piece, next_piece, self.model)
-            return action, route
+            return self.best_action(board, piece, next_piece)
 
 

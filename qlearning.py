@@ -10,7 +10,7 @@ import time
 import pickle
 
 class qlearning():
-    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, epochs, batch_size, lr, name, use_encoding, update_interval):
+    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, epochs, batch_size, lr, name, use_encoding, update_interval, gamma, rewards_object):
         self.player = player
         self.n_episodes = n_episodes
         self.n_games = n_games      #per episode
@@ -30,6 +30,8 @@ class qlearning():
         self.lines_cleared = [n_episodes*[0] for i in range(4)]
         self.best_game = (0, None)
         self.update_interval = update_interval
+        self.gamma = gamma
+        self.rewards_object = rewards_object
 
 
     def gen_games_db(self, episode):
@@ -66,8 +68,9 @@ class qlearning():
         return games_db
 
     def calculate_target_q(self, next_reward, next_state):
-        _, _, max_next_state_value = self.player.best_action(next_state[0], next_state[1], next_state[2], self.player.stable_model)
-        return next_reward + max_next_state_value
+        action, _ = self.player.best_action(next_state[0], next_state[1], next_state[2])
+        afterstate, lines, gameover = tetris_parser.generate_afterstate(next_state[0], next_state[1], next_state[2], action, self.use_encoding)
+        return self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate).detach().numpy()
 
     def training_loop(self, episode):
         afterstates, target_q = self.dataset_manager.sample(self.batch_size)

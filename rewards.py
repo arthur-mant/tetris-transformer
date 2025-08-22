@@ -37,5 +37,5 @@ class Rewards:
     def total_reward(self, lines, height, gameover):
         if gameover:
             return self.penalty_gameover()
-        return ((self.rew(lines)+self.pen(height))/self.rew(4))
+        return (self.rew(lines)+self.pen(height))/self.rew(4)
 
