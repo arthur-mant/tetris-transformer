@@ -9,7 +9,7 @@ class player():
     def __init__(self, model, init_epsilon, min_epsilon, load_from_file, use_encoding, rewards_object, name, gamma):
         self.model = model
         if load_from_file:
-            torch.load("saved_nns/"+name+"_most_recent.h5")
+            self.model.load_state_dict(torch.load("saved_nns/"+name+"_most_recent.h5", weights_only=True))
         self.stable_model = deepcopy(model)
         self.init_epsilon = init_epsilon
         self.epsilon = init_epsilon

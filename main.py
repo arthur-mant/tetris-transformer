@@ -5,6 +5,9 @@ import player
 import mlp
 import qlearning
 import rewards
+import random
+
+random.seed(1)      #change seeds later
 
 load_from_file = not "-n" in sys.argv
 if load_from_file:
@@ -33,9 +36,9 @@ db_manager = tetris_dataset.dataset_manager(rewards_object, 10000)
 
 init_epsilon = 0.05
 n_episodes = 10000
-lr = 0.00001
+lr = 0.0001
 epochs = 100
-update_interval = 5
+update_interval = 10
 gamma = 0.95
 
 name = "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_use_encoding"+str(use_encoding)+"_rew"+reward_function+"_pen"+penalty_function
