@@ -83,7 +83,7 @@ class qlearning():
 
         loss.backward()
 
-        torch.nn.utils.clip_grad_norm_(self.player.model.parameters(), max_norm = 1.0, norm_type=2)
+        #torch.nn.utils.clip_grad_norm_(self.player.model.parameters(), max_norm = 1.0, norm_type=2)
 
         self.optimizer.step()
         if episode >= 0:
@@ -118,7 +118,7 @@ class qlearning():
             t = time.time()
 
             self.dataset_manager.gen_train_db(self.player.model, self.calculate_target_q, self.use_encoding)
-            for _ in range(self.epochs*(len(self.dataset_manager.target_q)//(self.batch_size))):
+            for aux in range(self.epochs*len(self.dataset_manager.target_q)//(self.batch_size)):
                 self.training_loop(i)
 
             if i>0 and i % self.update_interval == 0:

@@ -33,7 +33,7 @@ class Rewards:
         return self.cphq*(20-h)*(20-h)
     def penalty_gameover(self):
         #penaliza 1 tetris quando perde
-        return -2
+        return -10
     def total_reward(self, lines, height, gameover):
         if gameover:
             return self.penalty_gameover()
