@@ -19,7 +19,7 @@ class qlearning():
         self.epochs = epochs
         self.batch_size = batch_size
         self.use_encoding = use_encoding
-        self.loss_f = nn.SmoothL1Loss()
+        self.loss_f = nn.MSELoss()
         self.optimizer = optim.AdamW(self.player.model.parameters(), lr=lr) 
         self.mean_score = []
         self.max_score = []
@@ -32,6 +32,7 @@ class qlearning():
         self.update_interval = update_interval
         self.gamma = gamma
         self.rewards_object = rewards_object
+        torch.set_printoptions(precision=8)
 
 
     def gen_games_db(self, episode):
@@ -68,18 +69,23 @@ class qlearning():
     def calculate_target_q(self, next_state):
         action, _ = self.player.best_action(next_state[0], next_state[1], next_state[2])
         afterstate, lines, gameover = tetris_parser.generate_afterstate(next_state[0], next_state[1], next_state[2], action, self.use_encoding)
-        with torch.no_grad():
-            return self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate).detach().numpy()
+        if gameover:
+            return [-1]
+        else:
+            with torch.no_grad():
+                return (1-self.gamma)*self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate).detach().numpy()
 
     def training_loop(self, episode):
         afterstates, target_q = self.dataset_manager.sample(self.batch_size)
-
         self.optimizer.zero_grad()
 
         outputs = self.player.model(afterstates)
         target_q = torch.reshape(target_q, (128, 1))
 
-        loss = self.loss_f(outputs, target_q)
+        #print("outputs: ", outputs[:10])
+        #print("target_q: ", target_q[:10])
+
+        loss = torch.sqrt(self.loss_f(outputs, target_q))
 
         loss.backward()
 

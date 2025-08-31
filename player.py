@@ -23,7 +23,7 @@ class player():
 
     def update_epsilon(self):
         if self.epsilon > self.min_epsilon:
-            self.epsilon -= (self.init_epsilon-self.min_epsilon)/1000
+            self.epsilon -= (self.init_epsilon-self.min_epsilon)/500
         else:
             self.epsilon = self.min_epsilon
 
@@ -37,7 +37,10 @@ class player():
             afterstate_values = list(self.model(afterstates).detach().numpy())
 
         for i in range(len(actions)):
-            afterstate_values[i] = self.rewards_object.total_reward(lines[i], actions[i][0], gameover[i])+self.gamma*afterstate_values[i]
+            if gameover[i]:
+                afterstate_values[i] = [-1]
+            else:
+                afterstate_values[i] = (1-self.gamma)*self.rewards_object.total_reward(lines[i], actions[i][0], gameover[i])+self.gamma*afterstate_values[i]
 
         while len(actions) > 0:
             idx_best_action = np.argmax(afterstate_values) 

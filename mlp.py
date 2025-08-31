@@ -20,7 +20,14 @@ class MLP(nn.Module):
             nn.Linear(100, 100),
             nn.ReLU(),
             nn.Linear(100, 1),
+            nn.Tanh()
         )
+        #self.linear_relu_stack.apply(self.init_weights)
+
+    #def init_weights(self, m):
+    #    if isinstance(m, nn.Linear):
+    #        torch.nn.init.zeros_(m.weight)
+    #        m.bias.data.fill_(0)
     def forward(self, x):
         logits = self.linear_relu_stack(x)
         return logits
