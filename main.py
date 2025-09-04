@@ -36,7 +36,7 @@ db_manager = tetris_dataset.dataset_manager(rewards_object, 10000)
 
 init_epsilon = 0.1
 n_episodes = 10000
-lr = 0.0001
+lr = 0.001
 epochs = 100
 update_interval = 1
 gamma = 0.99
