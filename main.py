@@ -3,6 +3,7 @@ import sys
 import tetris_dataset
 import player
 import mlp
+import cnn
 import qlearning
 import rewards
 import random
@@ -14,12 +15,6 @@ if load_from_file:
     print("loading weights from file")
 else:
     print("starting weights from scratch")
-
-use_encoding = "-ue" in sys.argv or "--use-encoding" in sys.argv
-if use_encoding:
-    print("using encoding")
-else:
-    print("not using encoding")
 
 #filename = sys.argv[-1]
 #f = open(filename, "rb")
@@ -41,15 +36,14 @@ epochs = 100
 update_interval = 1
 gamma = 0.99
 
-name = "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_use_encoding"+str(use_encoding)+"_rew"+reward_function+"_pen"+penalty_function
+name = "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_rew"+reward_function+"_pen"+penalty_function
 
 ql = qlearning.qlearning(
         player = player.player(
-            model = mlp.MLP(use_encoding),
+            model = cnn.CNN(),
             init_epsilon = init_epsilon,
             min_epsilon = 0.001,
             load_from_file = load_from_file,
-            use_encoding = use_encoding,
             rewards_object = rewards_object,
             name = name,
             gamma = gamma,
@@ -62,7 +56,6 @@ ql = qlearning.qlearning(
         batch_size = 128,
         lr = lr,
         name = name,
-        use_encoding = use_encoding,
         update_interval = update_interval,
         gamma = gamma,
         rewards_object = rewards_object

@@ -6,7 +6,7 @@ import torch
 from copy import deepcopy
 
 class player():
-    def __init__(self, model, init_epsilon, min_epsilon, load_from_file, use_encoding, rewards_object, name, gamma):
+    def __init__(self, model, init_epsilon, min_epsilon, load_from_file, rewards_object, name, gamma):
         self.model = model
         if load_from_file:
             self.model.load_state_dict(torch.load("saved_nns/"+name+"_most_recent.h5", weights_only=True))
@@ -14,7 +14,6 @@ class player():
         self.init_epsilon = init_epsilon
         self.epsilon = init_epsilon
         self.min_epsilon = min_epsilon
-        self.use_encoding = use_encoding
         self.rewards_object = rewards_object
         self.gamma = gamma          #future reward discount
 
@@ -32,9 +31,9 @@ class player():
         torch.save(self.model.state_dict(), path)
 
     def best_action(self, board, piece, next_piece):
-        actions, afterstates, lines, gameover = tetris_parser.get_all_afterstates(board, piece, next_piece, self.use_encoding)
+        actions, afterstates, next_pieces, lines, gameover = tetris_parser.get_all_afterstates(board, piece, next_piece)
         with torch.no_grad():
-            afterstate_values = list(self.model(afterstates).detach().numpy())
+            afterstate_values = list(self.model(afterstates, next_pieces).detach().numpy())
 
         for i in range(len(actions)):
             if gameover[i]:

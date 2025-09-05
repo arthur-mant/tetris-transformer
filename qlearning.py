@@ -10,7 +10,7 @@ import time
 import pickle
 
 class qlearning():
-    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, epochs, batch_size, lr, name, use_encoding, update_interval, gamma, rewards_object):
+    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, epochs, batch_size, lr, name, update_interval, gamma, rewards_object):
         self.player = player
         self.n_episodes = n_episodes
         self.n_games = n_games      #per episode
@@ -18,7 +18,6 @@ class qlearning():
         self.dataset_manager = dataset_manager
         self.epochs = epochs
         self.batch_size = batch_size
-        self.use_encoding = use_encoding
         self.loss_f = nn.MSELoss()
         self.optimizer = optim.AdamW(self.player.model.parameters(), lr=lr) 
         self.mean_score = []
@@ -68,28 +67,23 @@ class qlearning():
 
     def calculate_target_q(self, next_state):
         action, _ = self.player.best_action(next_state[0], next_state[1], next_state[2])
-        afterstate, lines, gameover = tetris_parser.generate_afterstate(next_state[0], next_state[1], next_state[2], action, self.use_encoding)
+        afterstate, next_piece, lines, gameover = tetris_parser.generate_afterstate(next_state[0], next_state[1], next_state[2], action)
         if gameover:
             return [-1]
         else:
             with torch.no_grad():
-                return (1-self.gamma)*self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate).detach().numpy()
+                return (1-self.gamma)*self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate, next_piece).detach().numpy()[0]
 
     def training_loop(self, episode):
-        afterstates, target_q = self.dataset_manager.sample(self.batch_size)
+        afterstates, next_pieces, target_q = self.dataset_manager.sample(self.batch_size)
         self.optimizer.zero_grad()
 
-        outputs = self.player.model(afterstates)
+        outputs = self.player.model(afterstates, next_pieces)
         target_q = torch.reshape(target_q, (128, 1))
-
-        #print("outputs: ", outputs[:10])
-        #print("target_q: ", target_q[:10])
 
         loss = torch.sqrt(self.loss_f(outputs, target_q))
 
         loss.backward()
-
-        #torch.nn.utils.clip_grad_norm_(self.player.model.parameters(), max_norm = 1.0, norm_type=2)
 
         self.optimizer.step()
         if episode >= 0:
@@ -101,7 +95,7 @@ class qlearning():
 
         if initial_training:
             print("training on games from file")
-            self.dataset_manager.gen_train_db(self.player.model, self.calculate_target_q, self.use_encoding)
+            self.dataset_manager.gen_train_db(self.player.model, self.calculate_target_q)
             for _ in range(10*self.epochs*(len(self.dataset_manager)//(self.batch_size))):
                 self.training_loop(-1)
             self.player.update_stable_model()
@@ -110,7 +104,7 @@ class qlearning():
             print("---------------------------------------------------")
             print("Episode ", i)
 
-            print("saida exemplo pra 197*[0]+4*[1]: ", self.player.model(torch.tensor(197*[0]+4*[1], dtype=torch.float)).item())
+            #print("saida exemplo pra 197*[0]+4*[1]: ", self.player.model(torch.tensor(196*[0]+4*[1], dtype=torch.float), torch.tensor([0], dtype=torch.float)).item())
 
 
             t = time.time()
@@ -123,7 +117,7 @@ class qlearning():
 
             t = time.time()
 
-            self.dataset_manager.gen_train_db(self.player.model, self.calculate_target_q, self.use_encoding)
+            self.dataset_manager.gen_train_db(self.player.model, self.calculate_target_q)
             for aux in range(self.epochs*len(self.dataset_manager.target_q)//(self.batch_size)):
                 self.training_loop(i)
 
