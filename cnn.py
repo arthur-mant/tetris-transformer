@@ -19,17 +19,16 @@ class CNN(nn.Module):
             nn.Linear(100, 1),
             nn.Tanh()
         )
-        self.linear_relu_stack.apply(self.init_weights)
+        #self.linear_relu_stack.apply(self.init_weights)
 
-    def init_weights(self, m):
-        if isinstance(m, nn.Linear):
-            m.weight.data.uniform_(-0.01, 0.01)
-            m.bias.data.fill_(0)
+    #def init_weights(self, m):
+        #if isinstance(m, nn.Linear):
+            #m.weight.data.uniform_(-0.01, 0.01)
+            #m.bias.data.fill_(0)
 
     def forward(self, board, piece):
         conv_out = self.convolution_layer(board)
         x = conv_out.view(-1, 4000)
-        #print(board.shape, conv_out.shape, x.shape, piece.shape)
         x = torch.cat((x, piece), 1)
         logits = self.linear_relu_stack(x)
         return logits

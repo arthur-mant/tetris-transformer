@@ -32,11 +32,11 @@ db_manager = tetris_dataset.dataset_manager(rewards_object, 10000)
 init_epsilon = 0.1
 n_episodes = 10000
 lr = 0.001
-epochs = 100
-update_interval = 1
+epochs = 30
+update_interval = 3
 gamma = 0.99
 
-name = "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_rew"+reward_function+"_pen"+penalty_function
+name = "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)
 
 ql = qlearning.qlearning(
         player = player.player(

@@ -52,7 +52,7 @@ class qlearning():
                     'board': board,
                     'piece': piece,
                     'next_piece': next_piece,
-                    'action': action,
+                    'action': action
                 })
                 if lines_cleared > 0:
                     self.lines_cleared[lines_cleared-1][episode] += 1
@@ -104,7 +104,9 @@ class qlearning():
             print("---------------------------------------------------")
             print("Episode ", i)
 
-            #print("saida exemplo pra 197*[0]+4*[1]: ", self.player.model(torch.tensor(196*[0]+4*[1], dtype=torch.float), torch.tensor([0], dtype=torch.float)).item())
+            
+            afst, npc, _, _ = tetris_parser.generate_afterstate([10*[0] for _ in range(20)], 0, 0, (17, 0, 0))
+            print("saida exemplo pra tabuleiro vazio: ", self.player.model(afst, npc).item())
 
 
             t = time.time()
