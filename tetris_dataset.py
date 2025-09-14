@@ -49,6 +49,7 @@ class dataset_manager():
                 self.afterstates.append(afterstate)
                 self.next_pieces.append(next_piece)
                 self.target_q.append(torch.tensor(calculate_target_q(ns), dtype=torch.float))
+
         if len(self.shuffled_idx) != len(self.target_q):
             self.shuffled_idx = list(range(len(self.target_q)))
         self.shuffle()
