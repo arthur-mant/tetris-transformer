@@ -1,5 +1,4 @@
 import player
-import mlp
 import rewards
 import sys
 import torch
@@ -15,23 +14,27 @@ if len(sys.argv) <= 1:
 
 use_screen = "-s" in sys.argv or "--screen" in sys.argv
 
-print(use_screen)
+if use_screen:
+    print("Using screen")
+else:
+    print("Not showing games on screen, to do it use the flag -s")
 
 nn_file = sys.argv[-1]
 nn_name = nn_file.split("/")[1]
 nn_name = nn_name.split("_episode")[0]
 nn_name = nn_name.split("_most_recent")[0]
 
-use_encoding = nn_name.split("use_encoding")[1].split("_")[0] == "True"
-reward_function = nn_name.split("rew")[1].split("_")[0]
-penalty_function = nn_name.split("pen")[1].split("_")[0]
-
-model = mlp.MLP(use_encoding)
+if "cnn" in nn_name:
+    import cnn
+    model = cnn.CNN()
+else:
+    import mlp
+    model = mlp.MLP(False)
 model.load_state_dict(torch.load(nn_file, weights_only=True))
 
-rewards_object = rewards.Rewards(reward_function, penalty_function)
+rewards_object = rewards.Rewards('q', 'q')
 
-p1 = player.player(model, 0, 0, False, use_encoding, rewards_object, nn_name, 0.99)
+p1 = player.player(model, 0, 0, False, rewards_object, nn_name, 0.99)
 
 #jogando os jogos
 

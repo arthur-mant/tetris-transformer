@@ -49,3 +49,14 @@ def plot_lines_cleared(lines_cleared, episode, name):
     plt.savefig("graphs/"+name+"_line_completion.png")
     plt.close()
 
+def plot_avg_length(game_length, episode, name):
+    y = game_length[:episode+1]
+    x = [i for i in range(len(y))]
+    plt.plot(x, y)
+    #plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 1))(np.unique(x)))
+    #plt.plot(loss[:episode+1])
+    plt.title("Média de jogadas por jogo")
+    plt.xlabel("Episódio")
+    plt.ylabel("Jogadas por jogo")
+    plt.savefig("graphs/"+name+"_game_length.png")
+    plt.close()

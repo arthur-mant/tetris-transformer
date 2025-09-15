@@ -22,6 +22,7 @@ class qlearning():
         self.optimizer = optim.AdamW(self.player.model.parameters(), lr=lr) 
         self.mean_score = []
         self.max_score = []
+        self.game_length = []
         self.acc_loss = n_episodes*[0]
         self.total_training_time = 0
         self.total_gen_time = 0
@@ -37,6 +38,7 @@ class qlearning():
     def gen_games_db(self, episode):
         games_db = []
         scores = []
+        total_length = 0
         for i in range(self.n_games):
             game = tetris_interface.Tetris()
             game_history = []
@@ -58,9 +60,11 @@ class qlearning():
                     self.lines_cleared[lines_cleared-1][episode] += 1
             scores.append(game.score)
             games_db.append(game_history)
+            total_length += len(game_history)
             if game.score > self.best_game[0]:
                 self.best_game = (game.score, game_history)
             
+        self.game_length.append(total_length/self.n_games)
         self.mean_score.append(np.mean(scores))
         self.max_score.append(np.max(scores))
         return games_db
@@ -132,6 +136,7 @@ class qlearning():
             print("Loss por época (média): ", self.acc_loss[i])
             print("Mean Score: ", self.mean_score[i])
             print("Max Score: ", self.max_score[i])
+            print("Mean game length: ", self.game_length[i])
 
             t = time.time() - t
             self.total_training_time += t
@@ -145,6 +150,7 @@ class qlearning():
                 graphs.plot_max_score(self.max_score, i, self.name)
                 graphs.plot_accumulated_loss(self.acc_loss, i, self.name)
                 graphs.plot_lines_cleared(self.lines_cleared, i, self.name)
+                graphs.plot_avg_length(self.game_length, i, self.name)
                 #saving best game
                 fileObj = open("logs/"+self.name+"_mean_score.pkl", 'wb')
                 pickle.dump(self.mean_score, fileObj)

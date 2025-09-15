@@ -29,7 +29,7 @@ rewards_object = rewards.Rewards(reward_function, penalty_function)
 db_manager = tetris_dataset.dataset_manager(rewards_object, 10000)
 #db_manager.gen_game_db(games_data)
 
-init_epsilon = 0.1
+init_epsilon = 0.5
 n_episodes = 10000
 lr = 0.00001
 epochs = 10
@@ -43,7 +43,7 @@ ql = qlearning.qlearning(
         player = player.player(
             model = cnn.CNN(),
             init_epsilon = init_epsilon,
-            min_epsilon = 0.001,
+            min_epsilon = 0.01,
             load_from_file = load_from_file,
             rewards_object = rewards_object,
             name = name,
