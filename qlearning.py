@@ -72,11 +72,8 @@ class qlearning():
     def calculate_target_q(self, next_state):
         action, _ = self.player.best_action(next_state[0], next_state[1], next_state[2])
         afterstate, next_piece, lines, gameover = tetris_parser.generate_afterstate(next_state[0], next_state[1], next_state[2], action)
-        if gameover:
-            return [-1]
-        else:
-            with torch.no_grad():
-                return (1-self.gamma)*self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate, next_piece).detach().numpy()[0]
+        with torch.no_grad():
+            return (1-self.gamma)*self.rewards_object.total_reward(lines, action[0]) + self.gamma*self.player.stable_model(afterstate, next_piece).detach().numpy()[0]
 
     def training_loop(self, episode):
         afterstates, next_pieces, target_q = self.dataset_manager.sample(self.batch_size)

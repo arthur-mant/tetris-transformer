@@ -29,7 +29,7 @@ rewards_object = rewards.Rewards(reward_function, penalty_function)
 db_manager = tetris_dataset.dataset_manager(rewards_object, 10000)
 #db_manager.gen_game_db(games_data)
 
-init_epsilon = 0.5
+init_epsilon = 0.1
 n_episodes = 10000
 lr = 0.00001
 epochs = 10
