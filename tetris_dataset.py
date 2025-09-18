@@ -1,13 +1,12 @@
 import tetris_parser
 import random
-from collections import deque
 import torch
 
 class dataset_manager():
 
-    def __init__(self, rewards_object, db_size):
+    def __init__(self, rewards_object):
         self.rewards_object = rewards_object
-        self.db = deque(maxlen=db_size)
+        self.db = []
         self.shuffled_idx = []
 
     def __len__(self):
@@ -29,6 +28,7 @@ class dataset_manager():
         return torch.stack(afterstates_out), torch.cat(next_pieces_out, 0), torch.stack(target_q_out)
 
     def gen_game_db(self, game_db):
+        self.db = []
         for game in game_db:
             for i in range(len(game)):
                 #se não perdeu mas acabou o episodio (chego no max de jogadas)

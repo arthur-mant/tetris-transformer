@@ -26,7 +26,7 @@ penalty_function = 'q'
 rewards_object = rewards.Rewards(reward_function, penalty_function)
 
 #mexer no tamannho
-db_manager = tetris_dataset.dataset_manager(rewards_object, 10000)
+db_manager = tetris_dataset.dataset_manager(rewards_object)
 #db_manager.gen_game_db(games_data)
 
 init_epsilon = 0.5
@@ -51,7 +51,7 @@ ql = qlearning.qlearning(
         ),
         n_episodes = n_episodes,
         n_games = 100,
-        max_plays = 100,
+        max_plays = 300,
         dataset_manager = db_manager,
         epochs = epochs,
         batch_size = 128,
