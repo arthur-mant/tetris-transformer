@@ -132,6 +132,10 @@ class qlearning():
                 self.player.update_stable_model()
             self.player.update_epsilon()
 
+            if self.game_length[i] > 0.9*self.max_plays:
+                print("reintroducing randomness!!")
+                self.player.epsilon = self.player.init_epsilon
+
             self.acc_loss[i] = self.acc_loss[i]/self.epochs
             print("Loss por época (média): ", self.acc_loss[i])
             print("Mean Score: ", self.mean_score[i])
