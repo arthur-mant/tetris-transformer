@@ -7,7 +7,9 @@ import cnn
 import qlearning
 import rewards
 import random
+import torch
 
+torch.set_num_threads(8)
 random.seed(1)      #change seeds later
 
 load_from_file = not "-n" in sys.argv
