@@ -9,7 +9,7 @@ import rewards
 import random
 import torch
 
-torch.set_num_threads(8)
+torch.set_num_threads(4)
 random.seed(1)      #change seeds later
 
 load_from_file = not "-n" in sys.argv

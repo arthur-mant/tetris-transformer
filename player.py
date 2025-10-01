@@ -22,7 +22,7 @@ class player():
 
     def update_epsilon(self):
         if self.epsilon > self.min_epsilon:
-            self.epsilon -= (self.init_epsilon-self.min_epsilon)/1000
+            self.epsilon -= (self.init_epsilon-self.min_epsilon)/500
         else:
             self.epsilon = self.min_epsilon
 
