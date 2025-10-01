@@ -36,7 +36,7 @@ n_episodes = 2000
 lr = 0.00001
 epochs = 10
 update_interval = 10
-gamma = 0.966
+gamma = 0.99
 
 name = "cnn_"
 name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"gamma"+str(gamma)
