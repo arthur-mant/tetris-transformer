@@ -30,12 +30,12 @@ class Rewards:
     def penalty_height_linear(self, h):
         return self.cphl*(20-h)
     def penalty_height_quadratic(self, h):
-        return self.cphq*(20-h)*(20-h)
+        return self.rew(1)/self.rew(4)*(20-h)*(20-h)/(22*22)
     def penalty_gameover(self):
         #penaliza 1 tetris quando perde
         return -1
     def total_reward(self, lines, height, gameover):
         if gameover:
             return self.penalty_gameover()
-        return (self.rew(lines)+self.pen(height))/self.rew(4)
+        return self.rew(lines)-self.pen(height)
 
