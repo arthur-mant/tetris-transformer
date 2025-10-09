@@ -37,9 +37,10 @@ lr = 0.00001
 epochs = 10
 update_interval = 10
 gamma = 0.99
+delta = 0.16
 
 name = "cnn_"
-name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"gamma"+str(gamma)
+name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_delta"+str(delta)
 
 ql = qlearning.qlearning(
         player = player.player(
@@ -50,6 +51,7 @@ ql = qlearning.qlearning(
             rewards_object = rewards_object,
             name = name,
             gamma = gamma,
+            delta = delta
         ),
         n_episodes = n_episodes,
         n_games = 100,
@@ -61,6 +63,7 @@ ql = qlearning.qlearning(
         name = name,
         update_interval = update_interval,
         gamma = gamma,
+        delta = delta,
         rewards_object = rewards_object
     )
 #ql.main_loop(not load_from_file)

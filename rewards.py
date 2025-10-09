@@ -26,7 +26,7 @@ class Rewards:
     def reward_linear(self, l):
         return l
     def reward_quadratic(self, l):
-        return l*l
+        return l*l/(4*4)
     def penalty_height_linear(self, h):
         return self.cphl*(20-h)
     def penalty_height_quadratic(self, h):
