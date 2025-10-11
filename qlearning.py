@@ -8,9 +8,10 @@ from torch import optim
 import torch
 import time
 import pickle
+import math
 
 class qlearning():
-    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, epochs, batch_size, lr, name, update_interval, gamma, rewards_object):
+    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, epochs, batch_size, lr, name, update_interval, gamma, delta, rewards_object):
         self.player = player
         self.n_episodes = n_episodes
         self.n_games = n_games      #per episode
@@ -31,6 +32,7 @@ class qlearning():
         self.best_game = (0, None)
         self.update_interval = update_interval
         self.gamma = gamma
+        self.delta = delta
         self.rewards_object = rewards_object
         torch.set_printoptions(precision=8)
 
@@ -76,7 +78,7 @@ class qlearning():
             return [-1]
         else:
             with torch.no_grad():
-                return (1-self.gamma)*self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate, next_piece).detach().numpy()[0]
+                return [math.tanh(self.delta*self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate, next_piece).detach().numpy()[0])]
 
     def training_loop(self, episode):
         afterstates, next_pieces, target_q = self.dataset_manager.sample(self.batch_size)
