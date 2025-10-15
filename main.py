@@ -37,7 +37,7 @@ lr = 0.00001
 epochs = 10
 update_interval = 10
 gamma = 0.99
-delta = 0.16
+delta = 0.1
 
 name = "cnn_"
 name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_delta"+str(delta)
