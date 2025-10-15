@@ -22,10 +22,10 @@ else:
 #f = open(filename, "rb")
 #games_data = pickle.load(f)
 
-reward_function = 'q'
-penalty_function = 'q'
+reward_exp = 2
+penalty_exp = 2
 
-rewards_object = rewards.Rewards(reward_function, penalty_function)
+rewards_object = rewards.Rewards(reward_exp, penalty_exp)
 
 #mexer no tamannho
 db_manager = tetris_dataset.dataset_manager(rewards_object)
@@ -40,7 +40,7 @@ gamma = 0.99
 delta = 0.1
 
 name = "cnn_"
-name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_delta"+str(delta)
+name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_delta"+str(delta)+"_rew_exp"+str(reward_exp)+"_pen_exp"+str(penalty_exp)
 
 ql = qlearning.qlearning(
         player = player.player(
