@@ -22,8 +22,8 @@ else:
 #f = open(filename, "rb")
 #games_data = pickle.load(f)
 
-reward_exp = 2
-penalty_exp = 2
+reward_exp = 5
+penalty_exp = 5
 penalty_multiplier = 0.1
 
 rewards_object = rewards.Rewards(reward_exp, penalty_exp, penalty_multiplier)
@@ -41,7 +41,8 @@ gamma = 0.99
 delta = 0.1
 
 name = "cnn_"
-name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_delta"+str(delta)+"_rew_exp"+str(reward_exp)+"_pen_exp"+str(penalty_exp)
+name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_delta"+str(delta)+"_rew_exp"+str(reward_exp)+"_pen_exp"+str(penalty_exp)+"_pen_mult"+str(penalty_multiplier)
+print("Name: ", name)
 
 ql = qlearning.qlearning(
         player = player.player(
