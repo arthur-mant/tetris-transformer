@@ -22,8 +22,8 @@ else:
 #f = open(filename, "rb")
 #games_data = pickle.load(f)
 
-reward_exp = 5
-penalty_exp = 5
+reward_exp = 2
+penalty_exp = 2
 penalty_multiplier = 0.1
 
 rewards_object = rewards.Rewards(reward_exp, penalty_exp, penalty_multiplier)
