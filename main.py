@@ -22,7 +22,7 @@ else:
 #f = open(filename, "rb")
 #games_data = pickle.load(f)
 
-reward_exp = 2
+reward_exp = 4
 penalty_exp = 2
 penalty_multiplier = 0.1
 
