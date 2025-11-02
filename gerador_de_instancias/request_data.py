@@ -140,15 +140,17 @@ class game:
         #pickle.dump(self.route_history, fileObj)
         #fileObj.close()
 
-    def generate_player_db(self, n, n_plays):
-        print("Number of games: ", n)
+    def generate_player_db(self, n_games, n_plays):
+        print("Number of games: ", n_games)
         print("Size of each game: ", n_plays)
-        print("Total plays: ", n*n_plays)
-        for n in range(n):
+        print("Total plays: ", n_games*n_plays)
+        line_score = [400, 1000, 3000, 12000]
+        for n in range(n_games):
             self.new_game()
             game_data = []
             i = 0
             lost = False
+            score = 0
             while ((i < n_plays) and (not lost)):
                 nxt_board, path = self.treat_response(self.make_request(url))
                 if (nxt_board == -1):
@@ -171,12 +173,15 @@ class game:
                 })
                 self.update_game(nxt_board)
                 i = i+1
+                if lines_cleared > 0:
+                    score += line_score[lines_cleared-1]
 
                 if ('1' in nxt_board[0]) or ('1' in nxt_board[1]):
                     lost = True
                     game_data[-1]['gameover'] = True
                     break
 
+            print("game ", n, ", score ", score)
             self.history.append(game_data)
             if n % 10 == 10-1:
                 self.save_player_data()
