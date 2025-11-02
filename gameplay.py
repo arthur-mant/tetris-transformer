@@ -5,6 +5,7 @@ import torch
 from tetris_game import tetris_interface
 from tetris_game import exec_game
 import numpy as np
+import cnn
 
 #inicializando a rede
 
@@ -20,29 +21,27 @@ else:
     print("Not showing games on screen, to do it use the flag -s")
 
 nn_file = sys.argv[-1]
-nn_name = nn_file.split("/")[1]
+nn_name = nn_file.split("/")[-1]
 nn_name = nn_name.split("_episode")[0]
 nn_name = nn_name.split("_most_recent")[0]
 
-if "cnn" in nn_name:
-    import cnn
-    model = cnn.CNN()
-else:
-    import mlp
-    model = mlp.MLP(False)
+model = cnn.CNN()
 model.load_state_dict(torch.load(nn_file, weights_only=True))
 
-rewards_object = rewards.Rewards('q', 'q')
+rewards_object = rewards.Rewards(4, 2, 0.1)
 
-p1 = player.player(model, 0, 0, False, rewards_object, nn_name, 0.99)
+p1 = player.player(model, 0, 0, False, rewards_object, nn_name, 0.99, 0.1)
 
 #jogando os jogos
 
 n_games = 10
-max_plays = 1000
+max_plays = 300
 lines = [4*[0] for i in range(n_games)]
 
 game_length = []
+game_score = []
+
+print("max game length: ", max_plays)
 
 for i in range(n_games):
     game = tetris_interface.Tetris()
@@ -67,4 +66,6 @@ for i in range(n_games):
     for j in range(4):
         print(j+1, ": ", lines[i][j])
     game_length.append(game.pieces)
+    game_score.append(game.score)
 print("mean length: ", np.mean(game_length))
+print("mean score: ", np.mean(game_score))
