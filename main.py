@@ -24,7 +24,7 @@ else:
 
 reward_exp = 4
 penalty_exp = 2
-penalty_multiplier = 0.1
+penalty_multiplier = 0.04
 
 rewards_object = rewards.Rewards(reward_exp, penalty_exp, penalty_multiplier)
 
