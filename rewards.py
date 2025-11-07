@@ -4,13 +4,16 @@ class Rewards:
     
     def __init__(self, min_rew_exp, max_rew_exp, pen_exp, pen_multiplier):
         self.rew_exp = min_rew_exp
+        self.min_rew_exp = min_rew_exp
         self.max_rew_exp = max_rew_exp
         self.pen_exp = pen_exp
         self.pen_multiplier = pen_multiplier
 
-    def set_next_rew_exp(self):
+    def update_rew_exp(self, episode):
         if self.rew_exp < self.max_rew_exp:
-            self.rew_exp += 1
+            #no 1500 se chega no final
+            self.rew_exp = self.min_rew_exp+((self.max_rew_exp-self.min_rew_exp)*episode/1500)
+        print("Novo expoente da recompensa: ", self.rew_exp)
 
     def reward(self, l):
         return pow(l, self.rew_exp)/pow(4, self.rew_exp)
