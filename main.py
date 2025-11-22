@@ -40,7 +40,7 @@ update_interval = 10
 gamma = 0.99
 delta = 0.1
 
-name = "cnn_"
+name = "cnn_original_bellman_"
 name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_delta"+str(delta)+"_rew_exp"+str(reward_exp)+"_pen_exp"+str(penalty_exp)+"_pen_mult"+str(penalty_multiplier)
 print("Name: ", name)
 
