@@ -42,7 +42,7 @@ class player():
             if gameover[i]:
                 afterstate_values[i] = -1
             else:
-                afterstate_values[i] = math.tanh(self.delta*self.rewards_object.total_reward(lines[i], actions[i][0], gameover[i])+self.gamma*afterstate_values[i])
+                afterstate_values[i] = self.rewards_object.total_reward(lines[i], actions[i][0], gameover[i])+self.gamma*afterstate_values[i]
 
         while len(actions) > 0:
             idx_best_action = np.argmax(afterstate_values) 
