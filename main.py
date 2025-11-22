@@ -23,7 +23,7 @@ else:
 #games_data = pickle.load(f)
 
 min_reward_exp = 2
-max_reward_exp = 6
+max_reward_exp = 10
 penalty_exp = 2
 penalty_multiplier = 0.04
 
@@ -34,7 +34,7 @@ db_manager = tetris_dataset.dataset_manager(rewards_object)
 #db_manager.gen_game_db(games_data)
 
 init_epsilon = 1
-n_episodes = 2000
+n_episodes = 2500
 lr = 0.00001
 epochs = 10
 update_interval = 10
