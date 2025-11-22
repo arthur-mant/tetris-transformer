@@ -78,7 +78,7 @@ class qlearning():
             return [-1]
         else:
             with torch.no_grad():
-                return [self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate, next_piece).detach().numpy()[0]]
+                return [float(self.rewards_object.total_reward(lines, action[0], gameover) + self.gamma*self.player.stable_model(afterstate, next_piece).detach().numpy()[0])]
 
     def training_loop(self, episode):
         afterstates, next_pieces, target_q = self.dataset_manager.sample(self.batch_size)
