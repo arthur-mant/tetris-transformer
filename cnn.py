@@ -16,8 +16,7 @@ class CNN(nn.Module):
             nn.ReLU(),
             nn.Linear(200, 100),
             nn.ReLU(),
-            nn.Linear(100, 1),
-            nn.Tanh()
+            nn.Linear(100, 1)
         )
         #self.linear_relu_stack.apply(self.init_weights)
 
