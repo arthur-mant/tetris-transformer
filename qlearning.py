@@ -11,7 +11,7 @@ import pickle
 import math
 
 class qlearning():
-    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, epochs, batch_size, lr, name, update_interval, gamma, delta, rewards_object):
+    def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, epochs, batch_size, lr, name, update_interval, gamma, rewards_object):
         self.player = player
         self.n_episodes = n_episodes
         self.n_games = n_games      #per episode
@@ -32,7 +32,6 @@ class qlearning():
         self.best_game = (0, None)
         self.update_interval = update_interval
         self.gamma = gamma
-        self.delta = delta
         self.rewards_object = rewards_object
         torch.set_printoptions(precision=8)
 

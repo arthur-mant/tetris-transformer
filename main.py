@@ -38,10 +38,9 @@ lr = 0.00001
 epochs = 10
 update_interval = 10
 gamma = 0.99
-delta = 0.1
 
 name = "cnn_original_bellman_1000_moves_"
-name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_delta"+str(delta)+"_rew_exp"+str(reward_exp)+"_pen_exp"+str(penalty_exp)+"_pen_mult"+str(penalty_multiplier)
+name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_rew_exp"+str(reward_exp)+"_pen_exp"+str(penalty_exp)+"_pen_mult"+str(penalty_multiplier)
 print("Name: ", name)
 
 ql = qlearning.qlearning(
@@ -52,8 +51,7 @@ ql = qlearning.qlearning(
             load_from_file = load_from_file,
             rewards_object = rewards_object,
             name = name,
-            gamma = gamma,
-            delta = delta
+            gamma = gamma
         ),
         n_episodes = n_episodes,
         n_games = 100,
@@ -65,7 +63,6 @@ ql = qlearning.qlearning(
         name = name,
         update_interval = update_interval,
         gamma = gamma,
-        delta = delta,
         rewards_object = rewards_object
     )
 #ql.main_loop(not load_from_file)
