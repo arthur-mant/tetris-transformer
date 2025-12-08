@@ -143,12 +143,14 @@ class qlearning():
             self.total_training_time += t
             print("Training took ", t, "s this episode, average time is ", self.total_training_time/(i+1), "s")
 
+            if i>0 and i % 300 == 0:
+                self.rewards_object.update_rew_exp(i)
+
             if i>0 and i % 100 == 0:
                 print("saving nn")
                 self.player.save_model(self.name+"_episode"+str(i)+".h5")
 
             if i>0 and i % 10 == 0:
-                self.rewards_object.update_rew_exp(i)
                 print("plotting graphs...")
                 self.player.save_model(self.name+"_most_recent.h5")
                 graphs.plot_mean_score(self.mean_score, i, self.name)
