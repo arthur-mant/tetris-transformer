@@ -34,13 +34,13 @@ db_manager = tetris_dataset.dataset_manager(rewards_object)
 #db_manager.gen_game_db(games_data)
 
 init_epsilon = 1
-n_episodes = 2500
+n_episodes = 2000
 lr = 0.00001
 epochs = 10
 update_interval = 10
 gamma = 0.99
 
-name = "cnn_original_continuous_1000_moves_"
+name = "cnn_original_continuous_"
 name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_rew_exp["+str(min_reward_exp)+", "+str(max_reward_exp)+"]_pen_exp"+str(penalty_exp)+"_pen_mult"+str(penalty_multiplier)
 print("Name: ", name)
 
@@ -56,7 +56,7 @@ ql = qlearning.qlearning(
         ),
         n_episodes = n_episodes,
         n_games = 100,
-        max_plays = 1000,
+        max_plays = 300,
         dataset_manager = db_manager,
         epochs = epochs,
         batch_size = 128,
