@@ -8,7 +8,7 @@ from copy import deepcopy
 
 
 class player():
-    def __init__(self, model, init_epsilon, min_epsilon, load_from_file, rewards_object, name, gamma, delta):
+    def __init__(self, model, init_epsilon, min_epsilon, load_from_file, rewards_object, name, gamma):
         self.model = model
         if load_from_file:
             self.model.load_state_dict(torch.load("saved_nns/"+name+"_most_recent.h5", weights_only=True))
@@ -18,7 +18,6 @@ class player():
         self.min_epsilon = min_epsilon
         self.rewards_object = rewards_object
         self.gamma = gamma          #future reward discount
-        self.delta = delta
 
     def update_stable_model(self):
        self.stable_model.load_state_dict(self.model.state_dict()) 
