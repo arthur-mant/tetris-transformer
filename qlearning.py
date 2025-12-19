@@ -171,6 +171,10 @@ class qlearning():
                 fileObj = open("logs/"+self.name+"_lines_cleared.pkl", 'wb')
                 pickle.dump(self.lines_cleared, fileObj)
                 fileObj.close()
+                fileObj = open("logs/"+self.name+"_game_length.pkl", 'wb')
+                pickle.dump(self.game_length, fileObj)
+                fileObj.close()
+
 
                 fileObj = open("best_games/"+self.name+"_best_game.pkl", 'wb')
                 pickle.dump(self.best_game[1], fileObj)
