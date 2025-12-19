@@ -22,7 +22,7 @@ else:
 #f = open(filename, "rb")
 #games_data = pickle.load(f)
 
-reward_exp = 4
+reward_exp = 3
 penalty_exp = 2
 penalty_multiplier = 0.04
 
@@ -33,13 +33,13 @@ db_manager = tetris_dataset.dataset_manager(rewards_object)
 #db_manager.gen_game_db(games_data)
 
 init_epsilon = 1
-n_episodes = 2000
+n_episodes = 2500
 lr = 0.00001
 epochs = 10
 update_interval = 10
 gamma = 0.99
 
-name = "cnn_original_fixo_"
+name = "final_fixo_"
 name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_rew_exp"+str(reward_exp)+"_pen_exp"+str(penalty_exp)+"_pen_mult"+str(penalty_multiplier)
 print("Name: ", name)
 
@@ -55,7 +55,7 @@ ql = qlearning.qlearning(
         ),
         n_episodes = n_episodes,
         n_games = 100,
-        max_plays = 300,
+        max_plays = 500,
         dataset_manager = db_manager,
         epochs = epochs,
         batch_size = 128,
