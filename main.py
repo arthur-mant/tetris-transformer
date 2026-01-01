@@ -5,7 +5,6 @@ import player
 import mlp
 import cnn
 import qlearning
-import rewards
 import random
 import torch
 
@@ -18,19 +17,8 @@ if load_from_file:
 else:
     print("starting weights from scratch")
 
-#filename = sys.argv[-1]
-#f = open(filename, "rb")
-#games_data = pickle.load(f)
 
-reward_exp = 3
-penalty_exp = 2
-penalty_multiplier = 0.04
-
-rewards_object = rewards.Rewards(reward_exp, penalty_exp, penalty_multiplier)
-
-#mexer no tamannho
-db_manager = tetris_dataset.dataset_manager(rewards_object)
-#db_manager.gen_game_db(games_data)
+db_manager = tetris_dataset.dataset_manager()
 
 init_epsilon = 1
 n_episodes = 2500
@@ -39,8 +27,8 @@ epochs = 10
 update_interval = 10
 gamma = 0.99
 
-name = "final_fixo_"
-name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)+"_rew_exp"+str(reward_exp)+"_pen_exp"+str(penalty_exp)+"_pen_mult"+str(penalty_multiplier)
+name = "real_score_"
+name += "lr"+str(lr)+"_epochs"+str(epochs)+"_update_interval"+str(update_interval)+"_gamma"+str(gamma)
 print("Name: ", name)
 
 ql = qlearning.qlearning(
@@ -49,7 +37,6 @@ ql = qlearning.qlearning(
             init_epsilon = init_epsilon,
             min_epsilon = 0.01,
             load_from_file = load_from_file,
-            rewards_object = rewards_object,
             name = name,
             gamma = gamma
         ),
@@ -63,7 +50,6 @@ ql = qlearning.qlearning(
         name = name,
         update_interval = update_interval,
         gamma = gamma,
-        rewards_object = rewards_object
     )
 #ql.main_loop(not load_from_file)
 ql.main_loop(False)

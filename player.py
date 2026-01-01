@@ -4,11 +4,12 @@ import numpy as np
 import random
 import torch
 import math
+import rewards
 from copy import deepcopy
 
 
 class player():
-    def __init__(self, model, init_epsilon, min_epsilon, load_from_file, rewards_object, name, gamma):
+    def __init__(self, model, init_epsilon, min_epsilon, load_from_file, name, gamma):
         self.model = model
         if load_from_file:
             self.model.load_state_dict(torch.load("saved_nns/"+name+"_most_recent.h5", weights_only=True))
@@ -16,7 +17,6 @@ class player():
         self.init_epsilon = init_epsilon
         self.epsilon = init_epsilon
         self.min_epsilon = min_epsilon
-        self.rewards_object = rewards_object
         self.gamma = gamma          #future reward discount
 
     def update_stable_model(self):
@@ -41,7 +41,7 @@ class player():
             if gameover[i]:
                 afterstate_values[i] = -1
             else:
-                afterstate_values[i] = float(self.rewards_object.total_reward(lines[i], actions[i][0], gameover[i])+self.gamma*afterstate_values[i][0])
+                afterstate_values[i] = float(rewards.total_reward(lines[i], actions[i][0], gameover[i])+self.gamma*afterstate_values[i][0])
         while len(actions) > 0:
             idx_best_action = np.argmax(afterstate_values) 
             best_action = actions[idx_best_action]

@@ -4,8 +4,7 @@ import torch
 
 class dataset_manager():
 
-    def __init__(self, rewards_object):
-        self.rewards_object = rewards_object
+    def __init__(self):
         self.db = []
         self.shuffled_idx = []
 
