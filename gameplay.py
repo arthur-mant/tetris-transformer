@@ -28,14 +28,14 @@ nn_name = nn_name.split("_most_recent")[0]
 model = cnn.CNN()
 model.load_state_dict(torch.load(nn_file, weights_only=True))
 
-rewards_object = rewards.Rewards(4, 2, 0.1)
+rewards_object = rewards.Rewards(4, 2, 0.04)
 
-p1 = player.player(model, 0, 0, False, rewards_object, nn_name, 0.99, 0.1)
+p1 = player.player(model, 0, 0, False, rewards_object, nn_name, 0.99)
 
 #jogando os jogos
 
 n_games = 10
-max_plays = 300
+max_plays = 50000
 lines = [4*[0] for i in range(n_games)]
 
 game_length = []
@@ -69,3 +69,4 @@ for i in range(n_games):
     game_score.append(game.score)
 print("mean length: ", np.mean(game_length))
 print("mean score: ", np.mean(game_score))
+print("score std deviation: ", np.std(game_score))

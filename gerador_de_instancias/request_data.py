@@ -5,6 +5,7 @@ import sys
 sys.path.insert(0, '..')
 from tetris_game import definitions
 from datetime import datetime
+import numpy as np
 
 sys.path.append("/home/lann/mestrado/tetris-transformer/")
 import tetris_parser
@@ -49,6 +50,8 @@ class game:
     history = []
     board = [[str(0) for _ in range(cols)] for _ in range(rows)]
     completed_games = []
+    scores = []
+    length = []
 
     archive_filename = recording_dir+"n_games"+str(n_games)+"n_plays"+str(number_of_plays)+".pkl"
 
@@ -163,6 +166,10 @@ class game:
                     print("ERROR: NULL ACTION")
                     #self.print_board(self.board)
                     #self.print_board(nxt_board)
+                if lines_cleared > 4:
+                    print(lines_cleared)
+                    self.print_board(self.board)
+                    self.print_board(nxt_board)
                 game_data.append({
                     'board': self.convert_to_int(self.board),
                     'piece': self.piece,
@@ -173,7 +180,9 @@ class game:
                 })
                 self.update_game(nxt_board)
                 i = i+1
+
                 if lines_cleared > 0:
+                    #print(lines_cleared)
                     score += line_score[lines_cleared-1]
 
                 if ('1' in nxt_board[0]) or ('1' in nxt_board[1]):
@@ -181,11 +190,17 @@ class game:
                     game_data[-1]['gameover'] = True
                     break
 
-            print("game ", n, ", score ", score)
+            print("game ", n, ", score ", score, " length " , len(game_data))
+            self.scores.append(score)
+            self.length.append(len(game_data))
             self.history.append(game_data)
             if n % 10 == 10-1:
                 self.save_player_data()
         self.save_player_data()
+
+        print("mean length: ", np.mean(self.length))
+        print("mean score: ", np.mean(self.scores))
+        print("score std deviation: ", np.std(self.scores))
 
     def get_coordinates(self, piece_board):
 
@@ -277,6 +292,8 @@ class game:
             for i in range(len(piece_board)):
                 if piece_board[i][j] == '-1':
                     depth_count += 1
+                if depth_count > 0 and piece_board[i][j] == '0':
+                    break
             lines_cleared = max(lines_cleared, depth_count)
 
         for pos in tetris_parser.get_possible_actions(self.convert_to_int(self.board), self.piece):
