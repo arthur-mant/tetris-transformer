@@ -32,7 +32,7 @@ p1 = player.player(model, 0, 0, False, nn_name, 0.99)
 
 #jogando os jogos
 
-n_games = 1000
+n_games = 10000
 max_plays = 100000
 
 #lines = [4*[0] for i in range(n_games)]
