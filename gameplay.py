@@ -3,7 +3,6 @@ import rewards
 import sys
 import torch
 from tetris_game import tetris_interface
-from tetris_game import exec_game
 import numpy as np
 import cnn
 import time
@@ -16,6 +15,7 @@ if len(sys.argv) <= 1:
 use_screen = "-s" in sys.argv or "--screen" in sys.argv
 
 if use_screen:
+    from tetris_game import exec_game
     print("Using screen")
 else:
     print("Not showing games on screen, to do it use the flag -s")
@@ -24,17 +24,18 @@ nn_file = sys.argv[-1]
 nn_name = nn_file.split("/")[-1]
 nn_name = nn_name.split("_episode")[0]
 nn_name = nn_name.split("_most_recent")[0]
+nn_name = nn_name.split(".h5")[0]
 
 model = cnn.CNN()
 model.load_state_dict(torch.load(nn_file, weights_only=True))
 
-rewards_object = rewards.Rewards(8, 2, 0.04)
+rewards_object = rewards.Rewards(3, 2, 0.04)
 
 p1 = player.player(model, 0, 0, False, rewards_object, nn_name, 0.99)
 
 #jogando os jogos
 
-n_games = 1000
+n_games = 10000
 max_plays = 100000
 
 #lines = [4*[0] for i in range(n_games)]
