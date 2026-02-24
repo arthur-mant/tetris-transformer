@@ -28,7 +28,8 @@ nn_name = nn_name.split("_most_recent")[0]
 model = cnn.CNN()
 model.load_state_dict(torch.load(nn_file, weights_only=True))
 
-rewards_object = rewards.Rewards(8, 2, 0.04)
+rewards_object = rewards.Rewards(2, 8, 2, 0.04)
+rewards_object.set_rew_exp(8)
 
 p1 = player.player(model, 0, 0, False, rewards_object, nn_name, 0.99)
 

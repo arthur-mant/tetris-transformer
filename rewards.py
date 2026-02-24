@@ -15,6 +15,9 @@ class Rewards:
             self.rew_exp = self.min_rew_exp+((self.max_rew_exp-self.min_rew_exp)*episode/1500)
         print("Novo expoente da recompensa: ", self.rew_exp)
 
+    def set_rew_exp(self, x):
+        self.rew_exp = x
+
     def reward(self, l):
         return pow(l, self.rew_exp)/pow(4, self.rew_exp)
     def penalty(self, h):
