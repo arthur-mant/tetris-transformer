@@ -9,6 +9,7 @@ import torch
 import time
 import pickle
 import math
+from pathlib import Path
 
 class qlearning():
     def __init__(self, player, n_episodes, n_games, max_plays, dataset_manager, epochs, batch_size, lr, name, update_interval, gamma, rewards_object):
@@ -34,6 +35,11 @@ class qlearning():
         self.gamma = gamma
         self.rewards_object = rewards_object
         torch.set_printoptions(precision=8)
+
+        Path("./logs/").mkdir(exist_ok=True)
+        Path("./saved_nns/").mkdir(exist_ok=True)
+        Path("./best_games/").mkdir(exist_ok=True)
+        Path("./graphs/").mkdir(exist_ok=True)
 
 
     def gen_games_db(self, episode):

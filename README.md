@@ -2,11 +2,15 @@ Este repositório implementa um jogador de Tetris baseado em deep Q-learning
 
 Para treinar uma nova rede, basta executar:
 
-python main.py
+python main.py -n
+
+Caso se opte por continuar o treinamento a partir de uma rede já treinada, basta executar (atualmente não implementado propriamente):
+
+python main.py "rede"
 
 Para testar as redes já treinadas, basta executar:
 
-python gameplay.py rede
+python gameplay.py "rede"
 
 Onde "rede" é o arquivo de pesos da rede neural, com as já treinadas estando no diretório trained\_nns
 Para visualizar o agente jogando, basta adicionar a flag -s
